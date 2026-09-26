@@ -1091,23 +1091,27 @@ const MOVES = {
     name: "Heel-dig isometrics", cat: "early",
     when: "Week 1 · 5 × 10-sec holds, 2–3 times a day · effort 30% → 40–50% → 50–60%",
     why: "The hamstring works without moving. That calms pain and starts rebuilding strength early, before the muscle is ready to move under load.",
-    setup: ["Lie on your back, left knee bent with the foot flat on the floor. Right leg straight or bent, whatever's comfortable."],
+    setup: [
+      "Lie on your back with your left knee bent to about 90°. Right leg straight or bent, whatever's comfortable.",
+      "Only the left heel touches the floor: pull your toes up toward your shin so the front of the foot lifts off."
+    ],
     steps: [
       "Press your left heel down into the floor and pull it toward you, as if dragging it, without letting it move.",
       "Build to today's effort and hold 10 seconds. 30% is gentle; 50–60% is firm but nowhere near straining. Keep breathing.",
       "Relax for about 10 seconds. Repeat for 5 holds."
     ],
     feel: "The back of the thigh switching on. Pain up to 3/10 is fine.",
-    stop: ["Cramping: ease the effort.", "Sharp pain: stop for the day."],
-    mistakes: ["Holding your breath.", "Lifting your hips off the floor.", "Jumping ahead on effort."],
+    stop: ["Cramping: ease the effort.", "Sharp pain: stop for the day.", "Tingling down the leg: relax the ankle a little. Pulling the toes up adds some nerve tension (Rule 4)."],
+    mistakes: ["Pressing through a flat foot, which lets the calf and quad do some of the work.", "Holding your breath.", "Lifting your hips off the floor.", "Jumping ahead on effort."],
     easier: "Less effort.",
-    harder: "Raise effort per the plan. Later, holds with the heel farther away (knee straighter) work the muscle at a longer length.",
+    harder: "Raise effort per the plan. Once 50–60% is easy at 90°, start with the heel farther out (knee around 45°) to work the muscle at a longer length.",
     mods: [],
     video: "hamstring isometric heel dig",
     fig: {
-      b: sup({ L: { ankle: [23, 3.6], bend: 1, ft: -3 }, R: FLAT }),
+      b: sup({ L: { ankle: [23, 3.6], bend: 1, ft: 44 }, R: FLAT }),
       props: [FL(-50, 46)],
-      over: [{ t: "arrow", from: [36, 13], to: [27, 5] }, { t: "text", x: 40, y: 16, s: "press + pull", anchor: "middle" }]
+      over: [{ t: "arrow", from: [26, 20], to: [26, 12] }, { t: "text", x: 29, y: 20, s: "press down", anchor: "start" },
+             { t: "arrow", from: [40, 2.4], to: [30, 2.4] }, { t: "text", x: 42.5, y: 1.2, s: "pull", anchor: "start" }]
     }
   },
   bridge: {
@@ -1239,7 +1243,7 @@ const MOVES = {
     name: "Box squats", cat: "early",
     when: "Day 10: bodyweight, 3 × 10",
     why: "Brings squatting back with the depth set by a box, so the hamstring doesn't get squashed or stretched at the bottom.",
-    setup: ["Stand in front of a bench or box about knee height, feet shoulder-width. Arms forward for balance."],
+    setup: ["Stand with a bench or box about knee height just behind you, feet shoulder-width. Arms forward for balance."],
     steps: [
       "Sit back and down until you lightly touch the box. Don't drop onto it.",
       "Pause a beat without relaxing.",
@@ -3066,7 +3070,11 @@ document.addEventListener("change", e => {
     if (S.cfg.tripStart && S.cfg.tripEnd && S.cfg.tripEnd < S.cfg.tripStart) { const a = S.cfg.tripStart; S.cfg.tripStart = S.cfg.tripEnd; S.cfg.tripEnd = a; toast("Swapped: leave date comes first"); }
     save(); render();
   }
-  if (kind === "final") { S.tests.final[t.dataset.k] = t.value; save(); render(); }
+  if (kind === "final") {
+    S.tests.final[t.dataset.k] = t.value; save();
+    // redraw after focus has moved on, then put the cursor back where it went
+    setTimeout(() => { const a = document.activeElement, id = a && a.id; render(); const el = id && document.getElementById(id); if (el) el.focus(); }, 0);
+  }
   if (kind === "impfile") {
     const f = t.files && t.files[0]; if (!f) return;
     const r = new FileReader(); r.onload = () => doImport(String(r.result)); r.readAsText(f);
