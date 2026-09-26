@@ -1,0 +1,3097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0e1514">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Rehab Log</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@500;600;700&display=swap">
+<style>
+/* ===== tokens: dark first, light via system or the in-app toggle ===== */
+:root{
+  color-scheme:dark;
+  --bg:#0e1514; --surface:#151e1d; --surface2:#1b2726; --surface3:#233331; --line:#29393a;
+  --text:#e6efed; --muted:#98aca9; --ghost:#667b78;
+  --accent:#3ccfba; --accent-text:#62e2ce; --accent-ink:#04221e; --accent-soft:#123d38;
+  --hold:#e9ad45; --hold-text:#f4c66e; --hold-soft:#3a2d14;
+  --stop:#ef6b64; --stop-text:#ff9690; --stop-soft:#3e1e1d;
+  --ph1:#1f8f82; --ph2:#3dbcab; --ph-trip:#d28e32; --ph3:#4b87c6; --ph-test:#96a3ba; --ph-m:#7ab87a;
+  --fig-body:#d8e5e2; --fig-far:#5f7572; --fig-floor:#364b4b; --fig-prop:#243433; --fig-prop-line:#6d8683; --fig-arrow:#c3d2cf;
+  --shadow:0 14px 36px rgba(0,0,0,.55);
+  --font-body:"Lato",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-head:"Poppins","Lato",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    color-scheme:light;
+    --bg:#f1f5f4; --surface:#ffffff; --surface2:#ecf2f0; --surface3:#dfe9e6; --line:#d2dedb;
+    --text:#13201e; --muted:#536764; --ghost:#8ca09d;
+    --accent:#0f7c70; --accent-text:#0b6a5f; --accent-ink:#ffffff; --accent-soft:#dbefeb;
+    --hold:#c07d10; --hold-text:#895705; --hold-soft:#fbf0da;
+    --stop:#cf4740; --stop-text:#b1302a; --stop-soft:#fbe6e4;
+    --ph1:#0b5f59; --ph2:#11776e; --ph-trip:#a0620f; --ph3:#2f5f8f; --ph-test:#3a475c; --ph-m:#3f7f3f;
+    --fig-body:#2b3b39; --fig-far:#a3b4b1; --fig-floor:#c4d2cf; --fig-prop:#dee8e5; --fig-prop-line:#8aa09d; --fig-arrow:#4c605d;
+    --shadow:0 14px 36px rgba(18,40,37,.18);
+  }
+}
+:root[data-theme="light"]{
+  color-scheme:light;
+  --bg:#f1f5f4; --surface:#ffffff; --surface2:#ecf2f0; --surface3:#dfe9e6; --line:#d2dedb;
+  --text:#13201e; --muted:#536764; --ghost:#8ca09d;
+  --accent:#0f7c70; --accent-text:#0b6a5f; --accent-ink:#ffffff; --accent-soft:#dbefeb;
+  --hold:#c07d10; --hold-text:#895705; --hold-soft:#fbf0da;
+  --stop:#cf4740; --stop-text:#b1302a; --stop-soft:#fbe6e4;
+  --ph1:#0b5f59; --ph2:#11776e; --ph-trip:#a0620f; --ph3:#2f5f8f; --ph-test:#3a475c; --ph-m:#3f7f3f;
+  --fig-body:#2b3b39; --fig-far:#a3b4b1; --fig-floor:#c4d2cf; --fig-prop:#dee8e5; --fig-prop-line:#8aa09d; --fig-arrow:#4c605d;
+  --shadow:0 14px 36px rgba(18,40,37,.18);
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0e1514; --surface:#151e1d; --surface2:#1b2726; --surface3:#233331; --line:#29393a;
+  --text:#e6efed; --muted:#98aca9; --ghost:#667b78;
+  --accent:#3ccfba; --accent-text:#62e2ce; --accent-ink:#04221e; --accent-soft:#123d38;
+  --hold:#e9ad45; --hold-text:#f4c66e; --hold-soft:#3a2d14;
+  --stop:#ef6b64; --stop-text:#ff9690; --stop-soft:#3e1e1d;
+  --ph1:#1f8f82; --ph2:#3dbcab; --ph-trip:#d28e32; --ph3:#4b87c6; --ph-test:#96a3ba; --ph-m:#7ab87a;
+  --fig-body:#d8e5e2; --fig-far:#5f7572; --fig-floor:#364b4b; --fig-prop:#243433; --fig-prop-line:#6d8683; --fig-arrow:#c3d2cf;
+  --shadow:0 14px 36px rgba(0,0,0,.55);
+}
+
+/* ===== base ===== */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font:16px/1.45 var(--font-body);min-height:100%;overscroll-behavior-y:contain}
+[hidden]{display:none!important}
+h1,h2,h3,h4{font-family:var(--font-head);margin:0;text-wrap:balance;line-height:1.2}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:inherit}
+button:disabled{cursor:default}
+input,select,textarea{min-width:0;font:inherit;color:var(--text);background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+textarea{resize:vertical;min-height:84px;line-height:1.4}
+input[type=number]{-moz-appearance:textfield;text-align:center;font-variant-numeric:tabular-nums}
+input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+a{color:var(--accent-text)}
+.muted{color:var(--muted)}
+.small{font-size:13.5px}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* ===== shell ===== */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:linear-gradient(var(--bg) 72%,transparent);
+  padding:12px 16px 10px;display:flex;align-items:baseline;justify-content:space-between;gap:12px;max-width:640px;margin:0 auto}
+.brand{font:700 19px/1 var(--font-head);letter-spacing:.11em;text-transform:uppercase}
+.brand b{color:var(--accent-text);font-weight:700}
+.top .date{color:var(--muted);font-size:13px;text-align:right}
+.wrap{max-width:640px;margin:0 auto;padding-inline:16px;padding-bottom:calc(96px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.wrap > *{min-width:0}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--surface);border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom,0px)}
+nav.tabs .in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+nav.tabs button{padding:9px 0 8px;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);
+  font:700 11px/1 var(--font-body);letter-spacing:.06em;text-transform:uppercase}
+nav.tabs button svg{width:22px;height:22px}
+nav.tabs button.on{color:var(--accent-text)}
+
+.banner{border-radius:12px;padding:10px 12px;font-size:13.5px;display:flex;gap:10px;align-items:flex-start;
+  background:var(--hold-soft);color:var(--text);border:1px solid color-mix(in srgb,var(--hold) 45%,transparent)}
+.banner button{margin-left:auto;color:var(--muted);font-weight:700;padding:0 2px}
+
+/* ===== cards & type ===== */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px}
+.card.flat{background:transparent;border:0;padding:0}
+.eyebrow{font:600 11.5px/1.2 var(--font-head);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.card h3{font-size:17px;font-weight:600}
+.stack{display:grid;gap:10px}
+.row{display:flex;align-items:center;gap:10px}
+.grow{flex:1;min-width:0}
+.sp{height:4px}
+.sechead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:10px 2px 0}
+.sechead h2{font-size:19px;font-weight:600}
+.sechead .muted{font-size:13px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--surface2);border:1px solid var(--line);
+  border-radius:12px;padding:11px 14px;font-weight:700;font-size:15px;text-align:center;min-height:44px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent}
+.btn.danger{color:var(--stop-text);border-color:color-mix(in srgb,var(--stop) 55%,transparent)}
+.btn.block{display:flex;width:100%}
+.btn svg{width:18px;height:18px;flex:none}
+.btn.sm{min-height:36px;padding:7px 11px;font-size:14px;border-radius:10px}
+.btn:active{transform:scale(.985)}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btns .btn{flex:1 1 140px}
+.link{color:var(--accent-text);font-weight:700}
+
+/* ===== today: header ===== */
+.dayhead{display:grid;gap:10px}
+.datenav{display:flex;align-items:center;gap:8px}
+.datenav .arrow{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;color:var(--muted)}
+.datenav .arrow svg{width:18px;height:18px}
+.datenav .mid{flex:1;text-align:center;min-width:0}
+.datenav .mid .d{font:600 15px/1.2 var(--font-head)}
+.datenav .mid .s{font-size:12.5px;color:var(--muted)}
+.pill{display:inline-flex;align-items:center;gap:5px;font:700 11.5px/1 var(--font-body);letter-spacing:.04em;padding:5px 9px;border-radius:99px;
+  border:1px solid var(--line);color:var(--muted);background:var(--surface)}
+.pill.accent{color:var(--accent-text);border-color:color-mix(in srgb,var(--accent) 50%,transparent);background:var(--accent-soft)}
+.pill.hold{color:var(--hold-text);border-color:color-mix(in srgb,var(--hold) 50%,transparent);background:var(--hold-soft)}
+.pill.stop{color:var(--stop-text);border-color:color-mix(in srgb,var(--stop) 50%,transparent);background:var(--stop-soft)}
+.weekstrip{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.wsd{border-radius:11px;padding:6px 0 7px;display:grid;justify-items:center;gap:4px;border:1px solid transparent;color:var(--muted)}
+.wsd .l{font:700 10.5px/1 var(--font-body);letter-spacing:.06em;text-transform:uppercase}
+.wsd .n{font:600 15px/1 var(--font-head);color:var(--text)}
+.wsd.sel{background:var(--surface);border-color:var(--line)}
+.wsd.today .n{color:var(--accent-text)}
+.wsd.future{opacity:.55}
+.ring{width:22px;height:22px}
+.ring .t{stroke:var(--surface3)}
+.ring .v{stroke:var(--accent)}
+
+.titleblock{display:grid;gap:4px}
+.titleblock h1{font-size:25px;font-weight:700;letter-spacing:-.005em}
+.titleblock .sub{color:var(--muted);font-size:14.5px}
+
+/* ===== morning check ===== */
+.q{font:600 15px/1.3 var(--font-head)}
+.qhint{font-size:13px;color:var(--muted)}
+.scale{display:grid;grid-template-columns:repeat(11,minmax(0,1fr));gap:3px}
+.scale button{height:44px;border-radius:9px;background:var(--surface2);border:1px solid var(--line);
+  font:700 15px/1 var(--font-body);font-variant-numeric:tabular-nums;text-align:center;color:var(--text)}
+.scale button.on{color:#fff;border-color:transparent}
+.scale button.on.lv0{background:var(--accent);color:var(--accent-ink)}
+.scale button.on.lv1{background:var(--hold);color:#241603}
+.scale button.on.lv2{background:var(--stop);color:#fff}
+.scale-legend{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:2px}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:3px}
+.seg button{padding:9px 6px;border-radius:9px;font-weight:700;font-size:14px;text-align:center;color:var(--muted)}
+.seg button.on{background:var(--surface);color:var(--text);box-shadow:0 1px 0 var(--line),0 0 0 1px var(--line)}
+.delta{font-size:13.5px;color:var(--muted)}
+.delta b{color:var(--text)}
+details.more{border-top:1px solid var(--line);padding-top:10px}
+details.more summary{list-style:none;display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;font-size:14.5px}
+details.more summary::-webkit-details-marker{display:none}
+details.more summary .chev{margin-left:auto;color:var(--muted);transition:transform .15s}
+details.more[open] summary .chev{transform:rotate(90deg)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{border:1px solid var(--line);background:var(--surface2);border-radius:99px;padding:8px 12px;font-size:14px;font-weight:700;color:var(--muted);text-align:left}
+.chip.on{color:var(--stop-text);border-color:color-mix(in srgb,var(--stop) 60%,transparent);background:var(--stop-soft)}
+.chip.on.hold{color:var(--hold-text);border-color:color-mix(in srgb,var(--hold) 60%,transparent);background:var(--hold-soft)}
+
+/* ===== verdict ===== */
+.verdict{border-radius:16px;padding:14px;display:grid;grid-template-columns:36px 1fr;gap:4px 12px;border:1px solid var(--line);background:var(--surface)}
+.verdict .ic{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;grid-row:span 2}
+.verdict .ic svg{width:20px;height:20px}
+.verdict h3{font-size:16.5px;font-weight:600;align-self:center}
+.verdict .body{grid-column:2;display:grid;gap:6px;font-size:14.5px}
+.verdict .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.verdict.go{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 35%,transparent)}
+.verdict.go .ic{background:var(--accent);color:var(--accent-ink)}
+.verdict.go h3{color:var(--accent-text)}
+.verdict.hold{background:var(--hold-soft);border-color:color-mix(in srgb,var(--hold) 40%,transparent)}
+.verdict.hold .ic{background:var(--hold);color:#241603}
+.verdict.hold h3{color:var(--hold-text)}
+.verdict.stop{background:var(--stop-soft);border-color:color-mix(in srgb,var(--stop) 45%,transparent)}
+.verdict.stop .ic{background:var(--stop);color:#fff}
+.verdict.stop h3{color:var(--stop-text)}
+.verdict.info .ic{background:var(--surface3);color:var(--muted)}
+.notes{display:grid;gap:6px}
+.note{display:flex;gap:10px;align-items:flex-start;font-size:14px;padding:10px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.note .dot{width:8px;height:8px;border-radius:50%;background:var(--hold);margin-top:6px;flex:none}
+.note.info .dot{background:var(--muted)}
+.note .grow b{font-weight:700}
+.note button{flex:none}
+
+/* ===== checklist ===== */
+.list{display:grid}
+.grp{font:600 11.5px/1 var(--font-head);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);padding:14px 2px 6px}
+.grp:first-child{padding-top:2px}
+.item{display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;align-items:center;padding:9px 0;border-top:1px solid var(--line)}
+.grp + .item,.list > .item:first-child{border-top:0}
+.checks{display:flex;gap:5px}
+.chk{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface2);display:grid;place-items:center;color:transparent}
+.chk svg{width:20px;height:20px}
+.chk.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chk.sm{width:40px;font:700 11px/1 var(--font-body);letter-spacing:.04em;color:var(--muted)}
+.chk.sm.on{color:var(--accent-ink)}
+.chk:disabled{opacity:.45}
+.iname{display:grid;gap:2px;min-width:0;padding:2px 0}
+.iname .nm{font-weight:700;font-size:15.5px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.iname .nm .how{color:var(--ghost);display:inline-grid;place-items:center}
+.iname .nm .how svg{width:14px;height:14px}
+.iname .dose{font-size:13.5px;color:var(--muted);line-height:1.35}
+.iname .inote{font-size:13px;color:var(--text);opacity:.85;font-style:italic}
+.opt{font:700 10.5px/1 var(--font-body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:3px 6px}
+.pchip{min-width:48px;height:32px;padding:0 9px;border-radius:99px;border:1px solid var(--line);font-weight:700;font-size:13px;text-align:center;
+  color:var(--muted);background:transparent;font-variant-numeric:tabular-nums}
+.pchip.lv0{color:var(--accent-text);border-color:color-mix(in srgb,var(--accent) 50%,transparent);background:var(--accent-soft)}
+.pchip.lv1{color:var(--hold-text);border-color:color-mix(in srgb,var(--hold) 50%,transparent);background:var(--hold-soft)}
+.pchip.lv2{color:var(--stop-text);border-color:color-mix(in srgb,var(--stop) 55%,transparent);background:var(--stop-soft)}
+.iwarn{grid-column:2/-1;font-size:13px;color:var(--stop-text)}
+.item.done .iname .nm{color:var(--text)}
+.addrow{display:flex;flex-wrap:wrap;gap:8px;padding-top:12px;border-top:1px solid var(--line);margin-top:4px}
+.addrow .btn{flex:1 1 auto;white-space:nowrap}
+.count{font:600 13px/1 var(--font-body);color:var(--muted);font-variant-numeric:tabular-nums}
+.dnote{font-size:14px;color:var(--muted);padding:2px 2px 0}
+.tip{font-size:13.5px;padding:10px 12px;border-radius:12px;background:var(--surface2);color:var(--muted)}
+.tip b{color:var(--text)}
+
+/* ===== checkpoint / tests ===== */
+.crit{display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.crit:first-of-type{border-top:0}
+.crit .t{font-size:14.5px}
+.crit .t small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
+.yn{display:flex;gap:4px}
+.yn button{min-width:52px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--surface2);font-weight:700;font-size:13.5px;color:var(--muted);text-align:center;padding:0 8px}
+.yn button.yes.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.yn button.no.on{background:var(--hold);border-color:var(--hold);color:#241603}
+.outcome{margin-top:10px;padding:10px 12px;border-radius:12px;font-weight:700;font-size:14.5px;display:flex;gap:8px;align-items:center}
+.outcome.go{background:var(--accent-soft);color:var(--accent-text)}
+.outcome.hold{background:var(--hold-soft);color:var(--hold-text)}
+.outcome.stop{background:var(--stop-soft);color:var(--stop-text)}
+.outcome.info{background:var(--surface2);color:var(--muted)}
+.curlrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.curlrow label{font-size:12px;color:var(--muted);font-weight:700;display:grid;gap:4px}
+.verdtable{display:grid;gap:4px;margin-top:6px}
+.verdtable div{display:grid;grid-template-columns:110px minmax(0,1fr);gap:10px;padding:8px 10px;border-radius:10px;font-size:14px}
+.verdtable div:nth-child(1){background:var(--accent-soft)}
+.verdtable div:nth-child(2){background:var(--hold-soft)}
+.verdtable div:nth-child(3){background:var(--stop-soft)}
+.verdtable b{font-weight:700}
+
+/* ===== plan tab ===== */
+.summary{display:grid;gap:12px}
+.summary .big{font:700 22px/1.2 var(--font-head)}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.summary > *{min-width:0}
+.fact{background:var(--surface2);border-radius:12px;padding:10px 12px}
+.fact .k{font-size:12px;color:var(--muted);font-weight:700}
+.fact .v{font:600 15px/1.3 var(--font-head);margin-top:2px}
+.timeline{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.1fr) minmax(0,.9fr) minmax(0,1.5fr) minmax(0,.8fr);gap:3px}
+.tl{overflow-wrap:anywhere;padding:8px 7px;border-radius:9px;color:#fff;font:700 10.5px/1.15 var(--font-body);letter-spacing:.04em;text-transform:uppercase;min-width:0;opacity:.55}
+.tl small{display:block;font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;opacity:.92;margin-top:3px}
+.tl.on{opacity:1;box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--text)}
+.tl.w1{background:var(--ph1)} .tl.w2{background:var(--ph2)} .tl.tr{background:var(--ph-trip)} .tl.w3{background:var(--ph3)} .tl.te{background:var(--ph-test)}
+:root[data-theme="light"] .tl.w2,:root[data-theme="light"] .tl.te{color:#fff}
+.dayrow{display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line);width:100%}
+.dayrow:first-child{border-top:0}
+.dayrow .dn{font:600 14px/1.1 var(--font-head);text-align:center;border-radius:10px;padding:7px 0;background:var(--surface2)}
+.dayrow .dn small{display:block;font:700 10px/1 var(--font-body);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px}
+.dayrow.cur .dn{background:var(--accent);color:var(--accent-ink)}
+.dayrow.cur .dn small{color:var(--accent-ink);opacity:.8}
+.dayrow .what{font-size:14px;line-height:1.35;min-width:0}
+.dayrow .what .dt{font-weight:700}
+.dayrow .what .ex{color:var(--muted);font-size:13px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dayrow .st{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.layout7{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px}
+.layout7 div{background:var(--surface2);border-radius:9px;padding:7px 4px;text-align:center;font-size:11.5px;line-height:1.25;min-width:0}
+.layout7 div b{display:block;font:700 10.5px/1 var(--font-body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.layout7 div.run{background:color-mix(in srgb,var(--ph3) 22%,var(--surface2))}
+.layout7 div.str{background:color-mix(in srgb,var(--ph1) 24%,var(--surface2))}
+.kv{display:grid;grid-template-columns:92px minmax(0,1fr);gap:6px 12px;font-size:14px}
+.kv dt{color:var(--muted);font-weight:700;font-size:13px}
+.kv dd{margin:0}
+.olist{margin:0;padding-left:20px;display:grid;gap:8px;font-size:14.5px}
+.ulist{margin:0;padding-left:18px;display:grid;gap:6px;font-size:14.5px}
+.redcard{background:var(--stop-soft);border-color:color-mix(in srgb,var(--stop) 40%,transparent)}
+.redcard h3{color:var(--stop-text)}
+.tealcard{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 30%,transparent)}
+details.wk{border-top:1px solid var(--line);padding:10px 0 2px}
+details.wk summary{cursor:pointer;font-weight:700;list-style:none;display:flex;align-items:center;gap:8px}
+details.wk summary::-webkit-details-marker{display:none}
+details.wk summary .chev{margin-left:auto;color:var(--muted);transition:transform .15s}
+details.wk[open] summary .chev{transform:rotate(90deg)}
+.weekhist{display:grid;gap:6px;font-size:14px}
+.weekhist div{display:flex;justify-content:space-between;gap:10px;padding:8px 10px;background:var(--surface2);border-radius:10px}
+.field{display:grid;gap:6px}
+.field label,.flabel{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.ev{font-size:13px;color:var(--muted);display:grid;gap:6px}
+.ev b{color:var(--text);font-weight:700}
+
+/* ===== moves tab ===== */
+.filters{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 4px;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.filters button{flex:none;padding:8px 12px;border-radius:99px;border:1px solid var(--line);background:var(--surface);font-weight:700;font-size:13.5px;color:var(--muted)}
+.filters button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.mrow{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:center;padding:8px 0;border-top:1px solid var(--line);width:100%;text-align:left}
+.mrow:first-of-type{border-top:0}
+.thumb{width:64px;height:52px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;overflow:hidden;padding:4px}
+.thumb svg{width:100%!important;height:100%!important;max-height:none}
+.thumb .ph{font:700 18px/1 var(--font-head);color:var(--ghost)}
+.mrow .nm{font-weight:700;font-size:15.5px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.mrow .wh{font-size:13px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.mrow .go{color:var(--ghost)}
+.mrow .go svg{width:18px;height:18px}
+.catsub{font-size:13px;color:var(--muted);margin:-2px 0 4px}
+
+/* ===== sheets ===== */
+.modal{position:fixed;inset:0;z-index:30;background:rgba(3,10,9,.55);display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);border:1px solid var(--line);border-bottom:0;border-radius:20px 20px 0 0;width:100%;max-width:640px;
+  max-height:92vh;max-height:92dvh;overflow-y:auto;padding:8px 16px calc(20px + env(safe-area-inset-bottom,0px));box-shadow:var(--shadow);
+  animation:up .18s ease-out}
+@keyframes up{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}}
+.grab{width:40px;height:4px;border-radius:9px;background:var(--line);margin:4px auto 10px}
+.shead{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.shead h2{font-size:22px;font-weight:700}
+.shead .x{margin-left:auto;width:36px;height:36px;border-radius:50%;background:var(--surface2);display:grid;place-items:center;color:var(--muted);flex:none}
+.shead .x svg{width:16px;height:16px}
+.sbody{display:grid;gap:14px}
+.figbox{background:var(--surface2);border-radius:14px;padding:10px 8px 8px;display:grid;gap:6px}
+.figbox .cap{font-size:12px;color:var(--muted);text-align:center;display:flex;justify-content:center;gap:14px;flex-wrap:wrap}
+.figbox .cap i{display:inline-block;width:14px;height:4px;border-radius:2px;vertical-align:middle;margin-right:5px;background:var(--accent)}
+.figbox .cap i.gh{background:var(--fig-body);opacity:.3}
+.dosebox{background:var(--accent-soft);border-radius:12px;padding:10px 12px;font-size:14.5px}
+.dosebox b{color:var(--accent-text)}
+.hsec h4{font:600 12px/1.2 var(--font-head);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.hsec p,.hsec li{font-size:15px}
+.hsec ol{margin:0;padding-left:22px;display:grid;gap:8px}
+.hsec ul{margin:0;padding-left:18px;display:grid;gap:6px}
+.ez{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ez div{background:var(--surface2);border-radius:12px;padding:10px 12px;font-size:14px}
+.ez b{display:block;font:600 11.5px/1 var(--font-head);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.mods{background:var(--surface2);border-radius:12px;padding:10px 12px}
+.mods h4{color:var(--accent-text)}
+.hist{display:flex;gap:4px;flex-wrap:wrap;align-items:center;font-size:13.5px;color:var(--muted)}
+.compos{display:grid;gap:0}
+.pick{display:grid;gap:4px}
+.pick .lib{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);width:100%}
+.pick .lib .nm{font-weight:700}
+.pick .lib .tag{margin-left:auto;color:var(--accent-text);font-weight:700;font-size:13px}
+.pick .cat{margin:10px 2px 2px}
+.textout{font:13.5px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap;background:var(--surface2);border-radius:12px;padding:12px;max-height:48vh;overflow:auto;border:1px solid var(--line)}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:40;background:var(--text);color:var(--bg);
+  font-weight:700;font-size:14px;padding:10px 16px;border-radius:99px;box-shadow:var(--shadow)}
+
+/* ===== progress ===== */
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;min-width:0}
+.stat .k{font-size:12px;color:var(--muted);font-weight:700}
+.stat .v{font:600 22px/1.15 var(--font-body);margin-top:4px}
+.stat .v small{font-size:13px;color:var(--muted);font-weight:700}
+.hero{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.hero .num{font:700 52px/1 var(--font-body)}
+.hero .num small{font-size:20px;color:var(--muted);font-weight:700}
+.hero .dl{font-size:14px;font-weight:700}
+.dl.down{color:var(--accent-text)} .dl.up{color:var(--stop-text)} .dl.flat{color:var(--muted)}
+.chart{position:relative;margin-top:8px}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart .grid line{stroke:var(--line);stroke-width:1}
+.chart .axis text{fill:var(--muted);font:600 11px var(--font-body);font-variant-numeric:tabular-nums}
+.chart .band text{fill:var(--muted);font:700 10px var(--font-body);letter-spacing:.05em;text-transform:uppercase}
+.chart .line{fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.chart .area{fill:var(--accent);opacity:.1}
+.chart .pt{fill:var(--accent);stroke:var(--surface);stroke-width:2}
+.chart .endlab{fill:var(--text);font:700 12px var(--font-body)}
+.chart .xh{stroke:var(--muted);stroke-width:1}
+.chart .limp{stroke:var(--surface);stroke-width:1.5}
+.tt{position:absolute;pointer-events:none;background:var(--text);color:var(--bg);border-radius:10px;padding:7px 10px;font-size:12.5px;line-height:1.35;
+  white-space:nowrap;transform:translate(-50%,-100%);box-shadow:var(--shadow)}
+.tt b{font-size:14px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.meter{height:8px;border-radius:99px;background:var(--surface3);overflow:hidden}
+.meter i{display:block;height:100%;border-radius:99px;background:var(--accent)}
+.adh{display:grid;grid-template-columns:96px 1fr 56px;gap:10px;align-items:center;font-size:14px;padding:6px 0}
+.adh .p{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);font-weight:700;font-size:13px}
+.exrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.exrow:first-child{border-top:0}
+.dots{display:flex;gap:3px;flex-wrap:wrap;justify-content:flex-end}
+.dots span{min-width:24px;height:22px;border-radius:6px;font:700 11.5px/22px var(--font-body);text-align:center;font-variant-numeric:tabular-nums}
+.dots .lv0{background:var(--accent-soft);color:var(--accent-text)}
+.dots .lv1{background:var(--hold-soft);color:var(--hold-text)}
+.dots .lv2{background:var(--stop-soft);color:var(--stop-text)}
+.hrow{display:grid;grid-template-columns:72px 1fr auto;gap:10px;align-items:start;padding:10px 0;border-top:1px solid var(--line);width:100%;text-align:left}
+.hrow:first-child{border-top:0}
+.hrow .d{font:600 13.5px/1.25 var(--font-head)}
+.hrow .d small{display:block;font:700 11px/1.3 var(--font-body);color:var(--muted)}
+.hrow .b{font-size:13.5px;color:var(--muted);min-width:0}
+.hrow .b .n{color:var(--text);font-style:italic;display:block;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.empty{color:var(--muted);text-align:center;padding:22px 10px;font-size:14.5px}
+
+/* ===== figures ===== */
+.fig{max-width:100%;height:auto;display:block;margin:0 auto}
+.fig polyline,.fig line,.fig path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.fig .f-body{stroke:var(--fig-body);stroke-width:3}
+.fig .f-far{stroke:var(--fig-far);stroke-width:2.8}
+.fig .f-leg{stroke:var(--accent);stroke-width:3.3}
+.fig .f-head,.fig .f-hipdot{fill:var(--fig-body)}
+.fig .f-ghost{opacity:.28}
+.fig .f-floor{stroke:var(--fig-floor);stroke-width:1.2}
+.fig .f-prop{fill:var(--fig-prop)}
+.fig .f-propline{stroke:var(--fig-prop-line);stroke-width:2}
+.fig .f-rail{stroke:var(--fig-prop-line);stroke-width:1.6}
+.fig .f-towel{fill:var(--hold);opacity:.85}
+.fig .f-arrow,.fig .f-arrowhead{stroke:var(--fig-arrow);stroke-width:1.4}
+.fig .f-text{fill:var(--muted);font:600 5.2px var(--font-body)}
+.fig .f-strong{fill:var(--fig-body);font-weight:700}
+.fig .f-cable{stroke:var(--fig-prop-line);stroke-width:1}
+.fig .f-bar{fill:var(--fig-prop-line)}
+.fig .f-band{stroke:var(--hold);stroke-width:1.3}
+.fig .f-wheel{fill:none;stroke:var(--fig-prop-line);stroke-width:1.6}
+.fig .f-pole{stroke:var(--fig-prop-line);stroke-width:1.4}
+.fig .f-ice{fill:#7cc4f0}
+.fig .f-cone{fill:var(--hold)}
+.fig .f-far-fill{fill:var(--fig-far)}
+
+@media (max-width:370px){
+  .scale{gap:2px}
+  .scale button{font-size:14px;border-radius:8px}
+  .titleblock h1{font-size:22px}
+  .stats{grid-template-columns:1fr 1fr}
+}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+</style>
+</head>
+<body>
+<header class="top"><div class="brand">Rehab<b>Log</b></div><div class="date" id="topDate"></div></header>
+<main class="wrap" id="view"></main>
+<nav class="tabs" aria-label="Sections"><div class="in" id="navIn"></div></nav>
+<div id="modalRoot"></div>
+<script>
+"use strict";
+const BUILD = "pages";
+/* =====================================================================
+   PLAN DATA — criteria-based hamstring strain rehab
+   (Askling L-protocol + progressive loading). Dates come from setup.
+   ===================================================================== */
+const INJURY_DATE = "";
+const PLAN_START = "";
+
+function it(ex, dose, o) { return Object.assign({ ex: ex, dose: dose }, o || {}); }
+const EXT = () => it("extender", "3 × 12 · morning and evening", { twice: true });
+const CORE_DOSE = "Dead bugs, side plank, Pallof press";
+
+/* ---- Weeks 1–2: one entry per plan day ---- */
+const PLAN_DAYS = {
+  1: { wk: 1, items: [
+    it("walk", "As normal a stride as pain allows", { label: "Short walks", group: "Daily basics" }),
+    it("heelslide", "About 10 slow reps, a few times a day", { group: "Daily basics" }),
+    it("ice", "15–20 min after activity", { group: "Daily basics" })
+  ] },
+  2: { wk: 1, items: [
+    it("heeldig", "About 30% effort · 5 × 10 sec, 2–3 times today"),
+    it("walk", "As normal a stride as pain allows", { label: "Short walks", group: "Daily basics" }),
+    it("heelslide", "About 10 slow reps, a few times a day", { group: "Daily basics" }),
+    it("ice", "15–20 min after activity", { group: "Daily basics" })
+  ] },
+  3: { wk: 1, items: [
+    it("heeldig", "40–50% effort · 5 × 10 sec, 2–3 times"),
+    it("bridge", "2 × 10", { label: "Double-leg bridges" }),
+    it("peloton", "10 min, easy, no resistance"),
+    it("walk", "As normal a stride as pain allows", { label: "Short walks", group: "Daily basics" }),
+    it("heelslide", "About 10 slow reps, a few times a day", { group: "Daily basics" }),
+    it("ice", "15–20 min after activity", { group: "Daily basics" })
+  ] },
+  4: { wk: 1, items: [
+    it("heeldig", "50–60% effort · 5 × 10 sec, 2–3 times"),
+    it("bridge", "3 × 10", { label: "Bridges" }),
+    it("walk", "One continuous 20-min walk", { label: "Continuous walk" }),
+    it("heelslide", "About 10 slow reps, a few times a day")
+  ] },
+  5: { wk: 1, note: "The L-protocol starts today. The Extender runs every day, morning and evening, from now on.", items: [
+    EXT(),
+    it("diver", "3 × 6"),
+    it("glider", "3 × 4"),
+    it("walk", "As normal a stride as pain allows", { label: "Short walks", group: "Daily basics" }),
+    it("heelslide", "A few sets through the day", { group: "Daily basics" })
+  ] },
+  6: { wk: 1, items: [
+    EXT(),
+    it("bridge", "3 × 12", { label: "Bridges" }),
+    it("walk", "25–30 min", { label: "Walk" }),
+    it("core", CORE_DOSE),
+    it("heelslide", "A few sets through the day")
+  ] },
+  7: { wk: 1, items: [
+    EXT(),
+    it("diver", "3 × 6"),
+    it("slbridge", "2 × 8 · give them a try"),
+    it("walk", "As normal a stride as pain allows", { label: "Short walks", group: "Daily basics" }),
+    it("heelslide", "A few sets through the day", { group: "Daily basics" })
+  ], checks: [
+    { id: "limp7", q: "Is the limp clearly better than it was on Day 1?",
+      no: "Hold at this level for a day or two (Repeat yesterday's level) before Week 2 adds load." }
+  ] },
+  8: { wk: 2, items: [
+    EXT(),
+    it("glider", "3 × 4"),
+    it("slbridge", "3 × 10"),
+    it("longbridge", "3 × 10"),
+    it("calfraise", "3 × 15"),
+    it("core", CORE_DOSE),
+    it("walk", "30–40 min", { label: "Walk" })
+  ] },
+  9: { wk: 2, items: [
+    EXT(),
+    it("diver", "3 × 6"),
+    it("peloton", "20–30 min, light resistance")
+  ] },
+  10: { wk: 2, items: [
+    EXT(),
+    it("slidecurl", "Both legs, short range · 3 × 6"),
+    it("boxsquat", "Bodyweight · 3 × 10"),
+    it("core", CORE_DOSE),
+    it("walk", "40–45 min", { label: "Walk" })
+  ] },
+  11: { wk: 2, note: "Trip-check day. Leaving before Day 13? Do this walk 2–3 days before you go instead.", items: [
+    EXT(),
+    it("diver", "3 × 6"),
+    it("glider", "3 × 4"),
+    it("tripcheck", "45–60 min brisk, with hills or stairs", { label: "Trip-check walk", test: "trip" })
+  ] },
+  12: { wk: 2, items: [
+    EXT(),
+    it("slbridge", "Easy effort", { group: "Light strength" }),
+    it("slidecurl", "Easy effort", { group: "Light strength" }),
+    it("core", CORE_DOSE),
+    it("walk", "Easy pace", { label: "Easy walk" })
+  ], tripMorning: true },
+  13: { wk: 2, items: [
+    EXT(),
+    it("diver", "3 × 6"),
+    it("walk", "Easy pace", { label: "Easy walk" })
+  ] },
+  14: { wk: 2, items: [
+    EXT(),
+    it("glider", "3 × 4")
+  ], checks: [
+    { id: "limp14", q: "Walking with no limp?",
+      no: "Still limping at two weeks: get re-checked. Ask for imaging, or raise it with your doctor." }
+  ] }
+};
+
+const WEEK_INFO = {
+  1: { title: "Settle it down",
+       intro: "Calm the muscle down, keep it moving, and start gentle loading. The L-protocol starts on Day 5.",
+       tip: "Upper-body days are fine from Day 2 with two tweaks: bend your knees more on seated rows, and do DB rows chest-supported on an incline bench. Lower A and B are on hold until Week 3." },
+  2: { title: "Load it and prep for the trip",
+       intro: "The Extender runs every day, morning and evening. Do the core tail on strength days.",
+       tip: "No jogging before the trip. It adds risk and does nothing for the hikes." }
+};
+
+/* ---- Trip ---- */
+const TRIP_CHECK = [
+  { k: "walk", text: "45–60 minutes of brisk walking with hills, no limp, pain 2/10 or less" },
+  { k: "morning", text: "No worse the next morning" },
+  { k: "easy", text: "Single-leg bridges and the Diver feel easy" }
+];
+const TRIP_RULES = [
+  "Use poles, take short steps on steep parts, and don't jog or jump down anything.",
+  "Turn around if pain climbs past 3/10.",
+  "If you fly, get up and walk the aisle every hour or so.",
+  "Keep up the routine. None of it needs equipment."
+];
+
+/* ---- Weeks 3–6 ---- */
+const WEEKS = {
+  3: { title: "Start jogging",
+       runs: "Mon: 6 rounds of 1 min easy jog / 1 min walk. Thu: 8 rounds of 2 min jog / 1 min walk, if Monday felt easy and the next morning was fine. If not, repeat Monday.",
+       strength: "Single-leg bridges, sliding leg curls, cable pull-throughs, Smith squats at about 60% of your usual weight, and light eccentric leg curls (lift with both legs, lower with the left over 3–4 sec).",
+       moveOn: "8 rounds of 2-min jogs feel easy, pain stays at 2/10 or less, and mornings are no worse." },
+  4: { title: "Build speed",
+       runs: "15–20 min continuous easy jog, then 6 × 60 m build-ups to 60–70% speed.",
+       strength: "Single-leg sliding curls, heavier eccentric curls, band-assisted Nordics 2 × 4. Smith RDLs come back at 50–65 lb with your 3-sec lowering, plus light Bulgarian split squats.",
+       moveOn: "Build-ups to 70% feel smooth and pain-free, and mornings are no worse." },
+  5: { title: "Get sport-ready",
+       runs: "6–8 × 60 m strides at 80–90%, plus side shuffles and cuts. Then softball: throwing, fielding, and easy base running.",
+       strength: "Nordics 3 × 5 with less band help, Smith RDL back to 95 lb, and otherwise your full Lower A (Tue) and Lower B (Fri).",
+       moveOn: "Strides at 90% and cuts feel pain-free, with no hesitation." },
+  6: { title: "Full speed and the test",
+       runs: "Mon: 4–6 × 30–40 m at full speed, with full rest (2–3 min) between. Thu: sprint, kick and range checks of the 100% test.",
+       strength: "Full Lower A and B, with Nordics 3 × 5. Friday opens with the single-leg curl check.",
+       moveOn: "Pass all four parts of the 100% test." }
+};
+
+const WEEKLY_LAYOUT = [
+  ["Mon", "Run + Upper A"], ["Tue", "Lower strength"], ["Wed", "Off or easy Peloton"],
+  ["Thu", "Run + Upper B"], ["Fri", "Lower strength"], ["Sat", "Long walk"], ["Sun", "Rest"]
+];
+
+/* weekday index: 0 = Mon … 6 = Sun */
+function weekItems(w, d) {
+  const items = [];
+  const warm = () => it("warmup", "Easy jog, leg swings, 3–4 build-ups", { label: "Warm-up" });
+  const upper = (x) => it("upper", "Your regular Upper " + x + " · log the lifts in LiftLog", { label: "Upper " + x });
+  // runs + upper
+  if (d === 0 || d === 3) {
+    if (w === 3) items.push(it("jogwalk", d === 0 ? "6 rounds: 1 min easy jog / 1 min walk"
+      : "8 rounds: 2 min jog / 1 min walk. Only if Monday felt easy and the next morning was fine; otherwise repeat Monday.", { label: "Jog/walk intervals" }));
+    if (w === 4) items.push(it("buildups", "15–20 min continuous easy jog, then 6 × 60 m build-ups to 60–70%", { label: "Easy jog + build-ups" }));
+    if (w === 5) {
+      items.push(warm());
+      items.push(it("strides", "6–8 × 60 m at 80–90%"));
+      items.push(it("cuts", "Side shuffles and cuts"));
+      items.push(it("softball", "Throwing, fielding, easy base running", { label: "Softball skills" }));
+    }
+    if (w === 6 && d === 0) { items.push(warm()); items.push(it("sprints", "4–6 × 30–40 m at full speed · 2–3 min rest")); }
+    if (w === 6 && d === 3) {
+      items.push(warm());
+      items.push(it("sprinttest", "Full speed, repeated, no pain or hesitation", { label: "100% test: sprints", test: "final", tk: "sprint", group: "100% test" }));
+      items.push(it("kicktest", "Left feels as secure as the right", { label: "100% test: kick", test: "final", tk: "kick", group: "100% test" }));
+      items.push(it("slr", "About even side to side", { label: "100% test: range", test: "final", tk: "range", group: "100% test" }));
+    }
+    items.push(upper(d === 0 ? "A" : "B"));
+  }
+  // lower strength
+  if (d === 1 || d === 4) {
+    const g = { group: "Lower strength" };
+    if (w === 3) {
+      items.push(it("slbridge", "3 × 10 each side", g));
+      items.push(it("slidecurl", "Both legs · 3 × 8", g));
+      items.push(it("pullthrough", "3 × 10", g));
+      items.push(it("smithsquat", "About 60% of your usual weight · 3 × 8", g));
+      items.push(it("eccurl", "Light · lift with both, lower with the left over 3–4 sec · 3 × 6", g));
+    }
+    if (w === 4) {
+      items.push(it("slidecurl", "Single-leg · 3 × 6 each side", g));
+      items.push(it("eccurl", "Heavier · lower with the left over 3–4 sec · 3 × 6", g));
+      items.push(it("nordic", "Band-assisted · 2 × 4", g));
+      items.push(it("smithrdl", "50–65 lb · 3-sec lowering · 3 × 8", g));
+      items.push(it("bss", "Light · 3 × 8 each side", g));
+    }
+    if (w === 5) {
+      items.push(it("nordic", "Less band help · 3 × 5", g));
+      items.push(it("smithrdl", "95 lb · 3-sec lowering", g));
+      items.push(it("lower", "The rest of your Lower " + (d === 1 ? "A" : "B") + " · log in LiftLog", Object.assign({ label: "Lower " + (d === 1 ? "A" : "B") }, g)));
+    }
+    if (w === 6) {
+      if (d === 4) items.push(it("curltest", "At the start of the session: same weight, left within 10% of right's reps", { label: "100% test: curl check", test: "final", tk: "curl", group: "100% test" }));
+      items.push(it("nordic", "3 × 5", g));
+      items.push(it("lower", "Full Lower " + (d === 1 ? "A" : "B") + " · log in LiftLog", Object.assign({ label: "Lower " + (d === 1 ? "A" : "B") }, g)));
+    }
+    items.push(it("core", CORE_DOSE));
+  }
+  if (d === 2) items.push(it("peloton", "Easy · optional", { label: "Easy Peloton", opt: true }));
+  if (d === 5) items.push(it("walk", "Easy pace, as long as it feels good", { label: "Long walk" }));
+  // L-protocol: Extender daily; Diver Mon/Wed/Fri/Sun; Glider Tue/Fri
+  items.push(EXT());
+  if (d === 0 || d === 2 || d === 4 || d === 6) items.push(it("diver", "3 × 6"));
+  if (d === 1 || d === 4) items.push(it("glider", "3 × 4"));
+  return items;
+}
+
+function weekDayNote(w, d) {
+  if (d === 6) return "Rest day. Just the L-protocol.";
+  if (d === 2) return "Off, or an easy Peloton ride.";
+  if ((d === 1 || d === 4) && w <= 4) return "Sets and reps on the strength moves are suggestions. Stay at 3/10 or less.";
+  if (w === 6 && d === 3) return "Test day. Warm up fully first. Skip anything that doesn't feel ready and retest later.";
+  return "";
+}
+
+/* ---- After passing the 100% test ---- */
+function maintItems(d) {
+  const items = [];
+  if (d === 1) { items.push(it("nordic", "3 × 5 · 1–2 times a week, indefinitely")); items.push(it("core", CORE_DOSE)); }
+  if (d === 4) { items.push(it("nordic", "Second weekly session", { opt: true })); items.push(it("core", CORE_DOSE)); }
+  return items;
+}
+const AFTER_BACK = [
+  ["Keep Nordics 1–2 times a week, indefinitely.", "They cut hamstring injuries roughly in half."],
+  ["Keep the core tail.", "Trunk-control work is linked to much lower re-injury rates, and low-back problems raise hamstring injury risk."],
+  ["Warm up before softball.", "An easy jog, leg swings, and 3–4 build-up runs before you sprint."]
+];
+
+/* ---- 100% test ---- */
+const FINAL_TEST = [
+  { k: "sprint", name: "Sprints", text: "Full-speed and repeated sprints with no pain or hesitation, and you feel fine the next morning.", ex: "sprinttest" },
+  { k: "kick", name: "Kick test", text: "Lying on your back, kick each straight leg up as fast as you can. The left feels as secure as the right, with no hesitation.", ex: "kicktest" },
+  { k: "curl", name: "Strength", text: "Single-leg leg curls at the same weight: the left gets within 10% of the right's reps.", ex: "curltest" },
+  { k: "range", name: "Range", text: "Straight-leg raise is about even side to side.", ex: "slr" }
+];
+
+/* ---- Rules ---- */
+const RULES = [
+  "Pain up to 3/10 during strength work is fine. Sharp pain or a sudden pull means stop that exercise for the day.",
+  "The next morning should be no worse. If it is, repeat the previous day's level for 1–2 days.",
+  "Don't stretch into pain. The three lengthening exercises (Extender, Diver, Glider) replace stretching, and each one stops just short of pain.",
+  "Tingling, burning, or pain shooting down the leg is nerve irritation, not muscle, and can come from your low back. Ease off the lengthening exercises if it shows up."
+];
+const RECHECK = [
+  "You feel a new pop, see a spreading bruise, or notice sudden weakness.",
+  "Nerve symptoms (rule 4) don't settle after you ease off.",
+  "You're still limping two weeks after the injury, or progress stalls for more than a week. Ask for imaging, or raise it with your doctor.",
+  "Your calf gets swollen, warm, or red, especially after a flight. That can be a clot, so get seen the same day."
+];
+const EVIDENCE = [
+  ["Askling et al., Br J Sports Med 2013", "Footballers on the L-protocol (Extender, Diver, Glider) returned in 28 days vs 51 on conventional rehab.", "https://pubmed.ncbi.nlm.nih.gov/23536466/"],
+  ["Hickey et al., J Orthop Sports Phys Ther 2020", "Allowing pain up to 4/10 during rehab was as safe as pain-free rehab and restored strength better.", ""],
+  ["van Dyk et al., Br J Sports Med 2019", "Programs that include Nordic curls halve hamstring injury rates (8,459 athletes).", ""],
+  ["Sherry & Best, J Orthop Sports Phys Ther 2004", "Agility and trunk-stabilization rehab: 7.7% re-injury at 1 year vs 70% with stretching and strengthening.", ""]
+];
+
+const SYMPTOMS = [
+  { k: "nerve", label: "Tingling, burning or shooting pain down the leg", short: "Nerve symptoms", level: "hold" },
+  { k: "pop", label: "A new pop", short: "New pop", level: "stop" },
+  { k: "bruise", label: "Spreading bruise", short: "Spreading bruise", level: "stop" },
+  { k: "weak", label: "Sudden weakness", short: "Sudden weakness", level: "stop" },
+  { k: "calf", label: "Calf swollen, warm or red", short: "Calf swollen, warm or red", level: "stop" }
+];
+
+/* =====================================================================
+   FIGURES — pose-based stick figures (side view, y-up model space)
+   Teal = left (injured) leg. Faded pose = start position.
+   ===================================================================== */
+const Fig = (() => {
+  const LEN = { torso: 28, neck: 3.5, headR: 6, upper: 16, fore: 16, thigh: 21, shin: 21, foot: 8 };
+  const R = Math.PI / 180;
+  const P = (p, a, l) => [p[0] + Math.cos(a * R) * l, p[1] + Math.sin(a * R) * l];
+  const f1 = n => Math.round(n * 10) / 10;
+  const SCALE = 2.3; // px per model unit, so every figure shares one line weight and head size
+
+  function ik(root, target, l1, l2, bend) {
+    const dx = target[0] - root[0], dy = target[1] - root[1];
+    let d = Math.hypot(dx, dy) || 0.001;
+    const max = l1 + l2 - 0.05;
+    let t = target;
+    if (d > max) { t = [root[0] + dx / d * max, root[1] + dy / d * max]; d = max; }
+    const base = Math.atan2(dy, dx);
+    const c = (l1 * l1 + d * d - l2 * l2) / (2 * l1 * d);
+    const A = Math.acos(Math.max(-1, Math.min(1, c)));
+    const ang = base + (bend || 1) * A;
+    const mid = [root[0] + Math.cos(ang) * l1, root[1] + Math.sin(ang) * l1];
+    const a2 = Math.atan2(t[1] - mid[1], t[0] - mid[0]);
+    return [mid, [mid[0] + Math.cos(a2) * l2, mid[1] + Math.sin(a2) * l2]];
+  }
+  function leg(hip, s, face) {
+    let knee, ankle;
+    if (s.ankle) [knee, ankle] = ik(hip, s.ankle, LEN.thigh, LEN.shin, s.bend || 1);
+    else { knee = P(hip, s.th, LEN.thigh); ankle = P(knee, s.sh, LEN.shin); }
+    const shinAng = Math.atan2(ankle[1] - knee[1], ankle[0] - knee[0]) / R;
+    const ft = s.ft != null ? s.ft : shinAng + 65 * face;
+    const toe = s.nofoot ? null : P(ankle, ft, s.footLen || LEN.foot);
+    return { knee, ankle, toe };
+  }
+  function arm(sh, s) {
+    let elbow, hand;
+    if (s.hand) [elbow, hand] = ik(sh, s.hand, LEN.upper, LEN.fore, s.bend || 1);
+    else { elbow = P(sh, s.up, LEN.upper); hand = P(elbow, s.fo, LEN.fore); }
+    return { elbow, hand };
+  }
+  function solve(p) {
+    const face = p.face || 1;
+    const hip = p.hip;
+    const sh = P(hip, p.torso, LEN.torso);
+    const hd = p.headDir != null ? p.headDir : p.torso;
+    const neck = P(sh, hd, LEN.neck);
+    const head = P(sh, hd, LEN.neck + LEN.headR);
+    return {
+      hip, sh, neck, head,
+      legL: leg(hip, p.L, face), legR: leg(hip, p.R, face),
+      armA: p.A ? arm(sh, p.A) : null, armB: p.B ? arm(sh, p.B) : null
+    };
+  }
+
+  /* ---- svg helpers (flip y) ---- */
+  const X = p => f1(p[0]), Y = p => f1(-p[1]);
+  const poly = (pts, cls) => `<polyline class="${cls}" points="${pts.filter(Boolean).map(p => X(p) + "," + Y(p)).join(" ")}"/>`;
+
+  function drawPose(s, ghost) {
+    const g = [];
+    // far limbs first
+    g.push(poly([s.hip, s.legR.knee, s.legR.ankle, s.legR.toe], "f-far"));
+    if (s.armB) g.push(poly([s.sh, s.armB.elbow, s.armB.hand], "f-far"));
+    // torso + neck + head
+    g.push(poly([s.hip, s.sh, s.neck], "f-body"));
+    g.push(`<circle class="f-head" cx="${X(s.head)}" cy="${Y(s.head)}" r="${LEN.headR}"/>`);
+    if (s.armA) g.push(poly([s.sh, s.armA.elbow, s.armA.hand], "f-body"));
+    // the left leg on top
+    g.push(poly([s.hip, s.legL.knee, s.legL.ankle, s.legL.toe], "f-leg"));
+    g.push(`<circle class="f-hipdot" cx="${X(s.hip)}" cy="${Y(s.hip)}" r="1.9"/>`);
+    return `<g class="${ghost ? "f-ghost" : "f-solid"}">${g.join("")}</g>`;
+  }
+
+  function ref(v, poses) {
+    if (Array.isArray(v)) return v;
+    // "a.legL.ankle" / "b.sh" / "b.armA.hand"
+    const parts = v.split(".");
+    let o = poses[parts[0]];
+    for (let i = 1; i < parts.length; i++) o = o && o[parts[i]];
+    return o || [0, 0];
+  }
+  const add = (p, o) => o ? [p[0] + o[0], p[1] + o[1]] : p;
+
+  function arrowPath(p0, p1, bulge, dbl) {
+    const mx = (p0[0] + p1[0]) / 2, my = (p0[1] + p1[1]) / 2;
+    const dx = p1[0] - p0[0], dy = p1[1] - p0[1];
+    const L = Math.hypot(dx, dy) || 1;
+    const c = [mx - dy / L * (bulge || 0), my + dx / L * (bulge || 0)];
+    const head = (tip, from) => {
+      const a = Math.atan2(tip[1] - from[1], tip[0] - from[0]);
+      const h1 = P(tip, a / R + 150, 4.2), h2 = P(tip, a / R - 150, 4.2);
+      return `<path class="f-arrowhead" d="M${X(h1)},${Y(h1)} L${X(tip)},${Y(tip)} L${X(h2)},${Y(h2)}"/>`;
+    };
+    let s = `<path class="f-arrow" d="M${X(p0)},${Y(p0)} Q${X(c)},${Y(c)} ${X(p1)},${Y(p1)}"/>` + head(p1, c);
+    if (dbl) s += head(p0, c);
+    return { svg: s, pts: [p0, p1, c] };
+  }
+
+  function drawProp(pr, poses, bounds) {
+    const push = (...pts) => pts.forEach(p => bounds.push(p));
+    switch (pr.t) {
+      case "floor": push([pr.x1, 0], [pr.x2, 0]);
+        return `<line class="f-floor" x1="${pr.x1}" y1="0" x2="${pr.x2}" y2="0"/>`;
+      case "rect": push([pr.x, pr.y], [pr.x + pr.w, pr.y + pr.h]);
+        return `<rect class="${pr.cls || "f-prop"}" x="${pr.x}" y="${f1(-(pr.y + pr.h))}" width="${pr.w}" height="${pr.h}" rx="${pr.r == null ? 1.5 : pr.r}"/>`;
+      case "line": { const a = add(ref(pr.a, poses), pr.oa), b = add(ref(pr.b, poses), pr.ob); push(a, b);
+        return `<line class="${pr.cls || "f-propline"}" x1="${X(a)}" y1="${Y(a)}" x2="${X(b)}" y2="${Y(b)}"/>`; }
+      case "circle": { const c = add(ref(pr.c, poses), pr.off); push([c[0] - pr.r, c[1] - pr.r], [c[0] + pr.r, c[1] + pr.r]);
+        return `<circle class="${pr.cls || "f-prop"}" cx="${X(c)}" cy="${Y(c)}" r="${pr.r}"/>`; }
+      case "towel": { const c = add(ref(pr.at, poses), pr.off); push([c[0] - 6, 0], [c[0] + 6, 2]);
+        return `<rect class="f-towel" x="${f1(c[0] - 6)}" y="-1.8" width="12" height="1.8" rx=".9"/>`; }
+      case "arrow": { const a = add(ref(pr.from, poses), pr.oa), b = add(ref(pr.to, poses), pr.ob);
+        const r = arrowPath(a, b, pr.bulge, pr.dbl); push(...r.pts); return r.svg; }
+      case "arc": { // angle arc around c from a1 to a2 (deg)
+        const c = ref(pr.c, poses), p0 = P(c, pr.a1, pr.r), p1 = P(c, pr.a2, pr.r); push(p0, p1);
+        return `<path class="f-arrow" d="M${X(p0)},${Y(p0)} A${pr.r},${pr.r} 0 0 0 ${X(p1)},${Y(p1)}"/>`; }
+      case "text": { const w = String(pr.s).length * 3.1, a = pr.anchor || "middle";
+        const xl = a === "start" ? pr.x : a === "end" ? pr.x - w : pr.x - w / 2; push([xl, pr.y - 2], [xl + w, pr.y + 5]);
+        return `<text class="f-text" x="${pr.x}" y="${f1(-pr.y)}" text-anchor="${pr.anchor || "middle"}">${pr.s}</text>`; }
+      default: return "";
+    }
+  }
+
+  function render(spec, label) {
+    if (!spec) return "";
+    if (spec.custom) return custom[spec.custom](label);
+    const poses = {};
+    if (spec.a) poses.a = solve(spec.a);
+    if (spec.b) poses.b = solve(spec.b);
+    const bounds = [];
+    const collect = s => {
+      if (!s) return;
+      [s.hip, s.sh, s.neck, s.legL.knee, s.legL.ankle, s.legL.toe, s.legR.knee, s.legR.ankle, s.legR.toe,
+        s.armA && s.armA.elbow, s.armA && s.armA.hand, s.armB && s.armB.elbow, s.armB && s.armB.hand]
+        .filter(Boolean).forEach(p => bounds.push(p));
+      bounds.push([s.head[0] - LEN.headR, s.head[1] - LEN.headR], [s.head[0] + LEN.headR, s.head[1] + LEN.headR]);
+    };
+    collect(poses.a); collect(poses.b);
+    const back = (spec.props || []).map(p => drawProp(p, poses, bounds)).join("");
+    const ga = (spec.propsA || []).map(p => drawProp(p, poses, bounds)).join("");
+    const gb = (spec.propsB || []).map(p => drawProp(p, poses, bounds)).join("");
+    const front = (spec.over || []).map(p => drawProp(p, poses, bounds)).join("");
+    let body = back;
+    if (poses.a && poses.b) body += `<g class="f-ghost">${ga}</g>` + drawPose(poses.a, true) + gb + drawPose(poses.b, false);
+    else body += ga + gb + drawPose(poses.b || poses.a, false);
+    body += front;
+    const pad = spec.pad || 5;
+    const xs = bounds.map(p => p[0]), ys = bounds.map(p => p[1]);
+    const x0 = Math.min(...xs) - pad, x1 = Math.max(...xs) + pad;
+    const y0 = Math.min(...ys) - pad, y1 = Math.max(...ys) + pad;
+    const K = spec.scale || SCALE;
+    return `<svg class="fig" width="${Math.round((x1 - x0) * K)}" height="${Math.round((y1 - y0) * K)}" viewBox="${f1(x0)} ${f1(-y1)} ${f1(x1 - x0)} ${f1(y1 - y0)}" role="img" aria-label="${label || "Exercise diagram"}">${body}</svg>`;
+  }
+
+  /* ---- custom top-down diagrams (drawn in svg space, y down) ---- */
+  function sArrow(x0, y0, x1, y1) {
+    const a = Math.atan2(y1 - y0, x1 - x0), h = 4.2;
+    const p1 = [x1 - h * Math.cos(a - 0.52), y1 - h * Math.sin(a - 0.52)], p2 = [x1 - h * Math.cos(a + 0.52), y1 - h * Math.sin(a + 0.52)];
+    return `<path class="f-arrow" d="M${x0},${y0} L${x1},${y1}"/><path class="f-arrowhead" d="M${f1(p1[0])},${f1(p1[1])} L${x1},${y1} L${f1(p2[0])},${f1(p2[1])}"/>`;
+  }
+  const svgOpen = (vb, w, h, label) => `<svg class="fig" width="${Math.round(w * SCALE)}" height="${Math.round(h * SCALE)}" viewBox="${vb}" role="img" aria-label="${label}">`;
+  const custom = {
+    pallof(label) {
+      const person = ext => {
+        const sh1 = [0, 11], sh2 = [0, -11], hand = [ext ? 31 : 12, 0];
+        const [e1] = ik(sh1, hand, 16, 16, -1), [e2] = ik(sh2, hand, 16, 16, 1);
+        return { sh1, sh2, e1, e2, hand };
+      };
+      const a = person(false), b = person(true);
+      const armPath = p => `<polyline class="f-body" points="${X(p.sh1)},${Y(p.sh1)} ${X(p.e1)},${Y(p.e1)} ${X(p.hand)},${Y(p.hand)} ${X(p.e2)},${Y(p.e2)} ${X(p.sh2)},${Y(p.sh2)}"/>`;
+      return svgOpen("-40 -60 124 86", 124, 86, label) + `
+        <rect class="f-prop" x="8" y="-60" width="28" height="11" rx="2"/>
+        <text class="f-text" x="40" y="-52" text-anchor="start">cable stack</text>
+        <g class="f-ghost"><line class="f-cable" x1="22" y1="-49" x2="${X(a.hand)}" y2="${Y(a.hand)}"/>${armPath(a)}</g>
+        <line class="f-cable" x1="22" y1="-49" x2="${X(b.hand)}" y2="${Y(b.hand)}"/>
+        <ellipse class="f-far-fill" cx="-2" cy="-15" rx="7" ry="3.4"/><ellipse class="f-far-fill" cx="-2" cy="15" rx="7" ry="3.4"/>
+        <line class="f-body" x1="0" y1="-11" x2="0" y2="11"/>${armPath(b)}
+        <circle class="f-head" cx="0" cy="0" r="6.5"/>
+        ${sArrow(9, 14, 29, 14)}
+        <text class="f-text" x="19" y="22" text-anchor="middle">press out</text>
+        <text class="f-text" x="-38" y="-30" text-anchor="start">seen from above</text>
+      </svg>`;
+    },
+    cuts(label) {
+      const cone = (x, y) => `<path class="f-cone" d="M${x - 3.2},${y + 2.8} L${x},${y - 3.6} L${x + 3.2},${y + 2.8} Z"/>`;
+      return svgOpen("0 -64 140 76", 140, 76, label) + `
+        ${cone(10, -50)}${cone(58, -50)}
+        ${sArrow(15, -41, 53, -41)}${sArrow(53, -33, 15, -33)}
+        <text class="f-text" x="34" y="-20" text-anchor="middle">stay low, feet apart</text>
+        <text class="f-text f-strong" x="34" y="6" text-anchor="middle">Side shuffle</text>
+        ${cone(104, -30)}
+        <path class="f-arrow" d="M104,-2 L104,-27"/>${sArrow(104, -27, 124, -49)}
+        <text class="f-text" x="99" y="-29" text-anchor="end">plant</text>
+        <text class="f-text f-strong" x="110" y="6" text-anchor="middle">45° cut</text>
+      </svg>`;
+    }
+  };
+
+  return { render, solve, LEN };
+})();
+
+/* =====================================================================
+   MOVES — how-to breakdowns for every exercise in the plan
+   ===================================================================== */
+const LY = 6.2; // spine height when lying down (head resting on the floor)
+const FL = (x1, x2) => ({ t: "floor", x1: x1, x2: x2 });
+const sup = o => Object.assign({ hip: [0, LY], torso: 180, headDir: 180, A: { up: -2, fo: -1 } }, o);
+const FLAT = { th: -4, sh: -2 };
+
+const MOVE_CATS = [
+  { k: "lp", name: "L-protocol", sub: "The three lengthening moves at the heart of the plan. They replace stretching." },
+  { k: "early", name: "Early loading", sub: "Weeks 1–2: settle it down, then start loading." },
+  { k: "core", name: "Core tail", sub: "Strength days now, and for good after you're back." },
+  { k: "str", name: "Strength", sub: "Weeks 3–6: rebuild strength at long lengths." },
+  { k: "move", name: "Walking, cycling and running", sub: "" },
+  { k: "test", name: "Checks and tests", sub: "" },
+  { k: "life", name: "Everyday and travel", sub: "" }
+];
+
+const MOVES = {
+  /* ---------------- L-PROTOCOL ---------------- */
+  extender: {
+    name: "Extender", cat: "lp",
+    when: "3 × 12, morning and evening · every day from Day 5 until you pass the 100% test",
+    why: "Loads the hamstring slowly while it lengthens, at the long lengths where sprinting strains happen. In the Askling trial the L-protocol got players back in 28 days instead of 51.",
+    setup: [
+      "Lie on your back on the floor, right leg straight.",
+      "Bend your left hip to 90° and hold the back of your left thigh with both hands, so the thigh points straight up. Keep it there for the whole set."
+    ],
+    steps: [
+      "Slowly straighten your left knee, letting the foot rise toward the ceiling.",
+      "Stop just before it hurts. Tension is fine; pain is the limit.",
+      "Bend the knee back down under control. That's one rep. 12 reps, rest about a minute, 3 sets."
+    ],
+    feel: "Tension building in the back of the thigh near the top of each rep, easing as you bend back down.",
+    stop: [
+      "Pain beyond mild tension: shorten the range for the rest of the set.",
+      "Tingling, burning, or pain shooting down the leg: that's the nerve (Rule 4). Stop the set and use a smaller range next time."
+    ],
+    mistakes: [
+      "Pulling your toes toward your shin. It tensions the sciatic nerve. Keep the ankle relaxed.",
+      "Letting the thigh drift off vertical to fake more range.",
+      "Swinging the leg up. Slow both ways."
+    ],
+    easier: "Smaller range, or hold the thigh a little lower than vertical.",
+    harder: "The range grows on its own as it heals. Let it; don't push for it.",
+    mods: ["Low back: keep the right leg and low back relaxed on the floor. A folded towel under your head is fine."],
+    video: "Askling extender hamstring exercise",
+    fig: {
+      a: sup({ A: { hand: [2.5, 14], bend: -1 }, L: { th: 90, sh: 0, ft: 60 }, R: FLAT }),
+      b: sup({ A: { hand: [2.5, 14], bend: -1 }, L: { th: 90, sh: 64, ft: 124 }, R: FLAT }),
+      props: [FL(-50, 50)],
+      over: [{ t: "arrow", from: "a.legL.ankle", to: "b.legL.ankle", oa: [4, 3], ob: [5, 2], bulge: -7 }]
+    }
+  },
+  diver: {
+    name: "Diver", cat: "lp",
+    when: "3 × 6, every other day from Day 5",
+    why: "Lengthens the hamstring from the hip end while you balance on the leg. The second L-protocol move.",
+    setup: [
+      "Stand on your left leg with the knee slightly bent (about 10–20°).",
+      "Arms by your sides, right foot just off the floor. Stand near a counter in case you need a fingertip for balance."
+    ],
+    steps: [
+      "Hinge forward at the hip, reaching both arms ahead while your right leg lifts back behind you, like a slow-motion dive.",
+      "Keep the standing knee at the same slight bend, your spine neutral, and your hips level.",
+      "Go only as far as you can without pain, pause a beat, then come back up to standing. That's one rep."
+    ],
+    feel: "Tension high in the back of the left thigh, plus the glute working to keep you steady.",
+    stop: [
+      "Pain: shrink the range.",
+      "Losing your balance and catching yourself hard on the left leg: slow down and use a fingertip on the counter."
+    ],
+    mistakes: [
+      "Rounding your back to reach lower.",
+      "Locking the standing knee straight.",
+      "Letting the right hip rotate open toward the ceiling."
+    ],
+    easier: "Fingertips on a counter, smaller range.",
+    harder: "More range as long as it stays pain-free. Once full range is easy, a slightly quicker tempo.",
+    mods: ["Low back: this is a hip hinge with a flat back, not a toe touch. Depth comes from the hips."],
+    video: "Askling diver hamstring exercise",
+    fig: {
+      a: { hip: [0, 45.4], torso: 90, A: { up: -94, fo: -91 }, L: { ankle: [-1, 4], bend: 1 }, R: { ankle: [-5, 9], bend: 1, ft: -30 } },
+      b: { hip: [-5, 45], torso: 20, A: { up: 22, fo: 22 }, L: { ankle: [-1, 4], bend: 1 }, R: { th: 199, sh: 197, ft: 285 } },
+      props: [FL(-50, 60)],
+      over: [{ t: "arrow", from: "a.legR.ankle", to: "b.legR.ankle", oa: [-4, -2], ob: [-5, -4], bulge: -8 }]
+    }
+  },
+  glider: {
+    name: "Glider", cat: "lp",
+    when: "3 × 4, every third day from Day 5",
+    why: "The toughest L-protocol move: the left hamstring works while it lengthens under your body weight, and your arms are the safety net.",
+    setup: [
+      "Face a kitchen counter and hold the edge.",
+      "Left foot forward with your weight on the heel and a soft knee (about 10–20°). Right foot behind you on a sock or small towel on a smooth floor.",
+      "Upper body tall."
+    ],
+    steps: [
+      "Slide the right foot straight back so your legs split and your hips drift back and down. Most of your weight stays on the left heel.",
+      "Stop before pain. The first sessions may only be a short slide.",
+      "Pull yourself back to the start with your arms, not the left leg. That's one rep."
+    ],
+    feel: "Strong tension in the back of the left thigh as the slide gets longer.",
+    stop: [
+      "Sharp pain or a sudden pull: stop for the day (Rule 1).",
+      "Nerve symptoms: ease off (Rule 4)."
+    ],
+    mistakes: [
+      "Pushing back up with the left leg. The return is arms only.",
+      "Bending the front knee a lot, which moves the work to the quad.",
+      "Collapsing forward over the counter."
+    ],
+    easier: "A shorter slide.",
+    harder: "Slide farther as it stays pain-free. Later, a slightly quicker slide.",
+    mods: ["Left wrist: grip the counter edge and pull. Don't press down through the left palm; lean on the right hand more if the wrist complains."],
+    video: "Askling glider hamstring exercise",
+    fig: {
+      a: { hip: [0, 45], torso: 86, A: { hand: [17, 50], bend: -1 }, L: { ankle: [3, 4], bend: 1 }, R: { ankle: [-7, 4], bend: 1 } },
+      b: { hip: [-18, 40], torso: 70, A: { hand: [17, 50], bend: -1 }, L: { ankle: [3, 4], bend: 1 }, R: { ankle: [-40, 4.5], bend: 1, ft: -12 } },
+      props: [FL(-54, 34), { t: "rect", x: 16, y: 0, w: 16, h: 50, r: 2 }],
+      propsA: [{ t: "towel", at: "a.legR.ankle", off: [3, 0] }],
+      propsB: [{ t: "towel", at: "b.legR.ankle", off: [3, 0] }],
+      over: [{ t: "arrow", from: [-12, 10], to: [-36, 10] }]
+    }
+  },
+
+  /* ---------------- EARLY LOADING ---------------- */
+  heelslide: {
+    name: "Heel slides", cat: "early",
+    when: "Weeks 1–2 · about 10 slow reps, a few times a day",
+    why: "Keeps the knee and hamstring moving through a pain-free range while things settle. Also helps the stiff, needs-to-pop feeling in the knee.",
+    setup: ["Lie on your back, legs straight. A sock on a smooth floor, or a towel under the heel, helps it glide."],
+    steps: [
+      "Slowly slide your left heel toward your butt, bending the knee.",
+      "Stop where it's still comfortable and pause for 2 seconds.",
+      "Slide it back out until the leg is straight. That's one rep."
+    ],
+    feel: "Easy movement, maybe mild tightness at the end of the range. No pain.",
+    stop: ["Sharp or climbing pain: shorten the range."],
+    mistakes: ["Forcing the end of the range.", "Rushing the reps."],
+    easier: "Smaller range.",
+    harder: "The range grows day to day. Once it's full and easy, these have done their job.",
+    mods: [],
+    video: "supine heel slides knee",
+    fig: {
+      a: sup({ L: FLAT, R: FLAT }),
+      b: sup({ L: { ankle: [22, 3.6], bend: 1, ft: -3 }, R: FLAT }),
+      props: [FL(-50, 54)],
+      over: [{ t: "arrow", from: [44, 12], to: [27, 12] }]
+    }
+  },
+  heeldig: {
+    name: "Heel-dig isometrics", cat: "early",
+    when: "Week 1 · 5 × 10-sec holds, 2–3 times a day · effort 30% → 40–50% → 50–60%",
+    why: "The hamstring works without moving. That calms pain and starts rebuilding strength early, before the muscle is ready to move under load.",
+    setup: ["Lie on your back, left knee bent with the foot flat on the floor. Right leg straight or bent, whatever's comfortable."],
+    steps: [
+      "Press your left heel down into the floor and pull it toward you, as if dragging it, without letting it move.",
+      "Build to today's effort and hold 10 seconds. 30% is gentle; 50–60% is firm but nowhere near straining. Keep breathing.",
+      "Relax for about 10 seconds. Repeat for 5 holds."
+    ],
+    feel: "The back of the thigh switching on. Pain up to 3/10 is fine.",
+    stop: ["Cramping: ease the effort.", "Sharp pain: stop for the day."],
+    mistakes: ["Holding your breath.", "Lifting your hips off the floor.", "Jumping ahead on effort."],
+    easier: "Less effort.",
+    harder: "Raise effort per the plan. Later, holds with the heel farther away (knee straighter) work the muscle at a longer length.",
+    mods: [],
+    video: "hamstring isometric heel dig",
+    fig: {
+      b: sup({ L: { ankle: [23, 3.6], bend: 1, ft: -3 }, R: FLAT }),
+      props: [FL(-50, 46)],
+      over: [{ t: "arrow", from: [36, 13], to: [27, 5] }, { t: "text", x: 40, y: 16, s: "press + pull", anchor: "middle" }]
+    }
+  },
+  bridge: {
+    name: "Bridges", cat: "early",
+    when: "Day 3: 2 × 10 · Day 4: 3 × 10 · Day 6: 3 × 12",
+    why: "Works the glutes and hamstrings together at a short, safe length.",
+    setup: ["Lie on your back, knees bent, feet flat and hip-width apart, heels about a foot from your butt. Arms by your sides."],
+    steps: [
+      "Brace your stomach lightly, press through your heels, and lift your hips until your shoulders, hips and knees make a straight line.",
+      "Squeeze your glutes and hold 1–2 seconds at the top.",
+      "Lower slowly. That's one rep."
+    ],
+    feel: "Glutes mostly, hamstrings some.",
+    stop: ["Hamstring cramp: bring your feet closer to your butt.", "Pain over 3/10: lift less high."],
+    mistakes: ["Arching your low back at the top.", "Pushing through your toes."],
+    easier: "Smaller lift.",
+    harder: "Later in the plan: feet farther out, then single-leg.",
+    mods: ["Low back: stop when your body is in a straight line. Pushing the hips higher just arches the low back."],
+    video: "glute bridge form",
+    fig: {
+      a: sup({ L: { ankle: [22, 4], bend: 1, ft: -3 }, R: { ankle: [22, 4], bend: 1, ft: -3 } }),
+      b: sup({ hip: [-2.5, 18.5], torso: 205, A: { up: -1, fo: -1 }, L: { ankle: [22, 4], bend: 1, ft: -3 }, R: { ankle: [22, 4], bend: 1, ft: -3 } }),
+      props: [FL(-50, 34)],
+      over: [{ t: "arrow", from: [-9, 9], to: [-9, 20] }]
+    }
+  },
+  slbridge: {
+    name: "Single-leg bridges", cat: "early",
+    when: "Day 7: 2 × 8 (give them a try) · Week 2 on: 3 × 10 · daily on the trip",
+    why: "The same bridge, but the left leg does the work alone. Builds real strength before running.",
+    setup: [
+      "Lie on your back, left foot planted as for a bridge.",
+      "Hug your right knee toward your chest, or hold it bent in the air."
+    ],
+    steps: [
+      "Press through the left heel and lift your hips until your left knee, hips and shoulders line up.",
+      "Keep the hips level. Don't let the right side drop.",
+      "Pause, then lower slowly. Do the right side too, same reps, so you can compare sides."
+    ],
+    feel: "Left glute and hamstring.",
+    stop: ["Hamstring cramp: move the foot a little closer.", "Pain over 3/10: switch to double-leg for that set."],
+    mistakes: ["Hips tilting or twisting.", "Pushing through the toes.", "Arching the low back."],
+    easier: "Lift with both feet, lower on the left alone.",
+    harder: "Foot farther out, or foot up on a step.",
+    mods: ["Low back: hugging the right knee to your chest keeps your low back from arching."],
+    video: "single leg glute bridge",
+    fig: {
+      a: sup({ L: { ankle: [22, 4], bend: 1, ft: -3 }, R: { th: 92, sh: 2, ft: 62 } }),
+      b: sup({ hip: [-2.5, 18.5], torso: 205, A: { up: -1, fo: -1 }, L: { ankle: [22, 4], bend: 1, ft: -3 }, R: { th: 100, sh: 12, ft: 72 } }),
+      props: [FL(-50, 34)],
+      over: [{ t: "arrow", from: [-9, 9], to: [-9, 20] }]
+    }
+  },
+  longbridge: {
+    name: "Bridges, feet farther out", cat: "early",
+    when: "Day 8: 3 × 10",
+    why: "Moving the feet away shifts work from the glutes to the hamstrings, at a longer length.",
+    setup: ["Set up for a bridge, then walk your heels about 6–8 inches farther away, so your knees are bent less."],
+    steps: [
+      "Press through your heels and lift your hips.",
+      "Pause 1–2 seconds at the top.",
+      "Lower slowly."
+    ],
+    feel: "More hamstring than a regular bridge.",
+    stop: ["Cramping or pain over 3/10: move the feet back in a little."],
+    mistakes: ["Letting the hips sag at the top.", "Arching the low back."],
+    easier: "Feet a bit closer.",
+    harder: "Single-leg version.",
+    mods: ["Low back: straight line at the top, no higher."],
+    video: "long lever glute bridge hamstring",
+    fig: {
+      a: sup({ L: { ankle: [31, 4], bend: 1, ft: -3 }, R: { ankle: [31, 4], bend: 1, ft: -3 } }),
+      b: sup({ hip: [-1.5, 14], torso: 196, A: { up: -1, fo: -1 }, L: { ankle: [31, 4], bend: 1, ft: -3 }, R: { ankle: [31, 4], bend: 1, ft: -3 } }),
+      props: [FL(-50, 42)],
+      over: [{ t: "arrow", from: [-8, 8.5], to: [-8, 16.5] }]
+    }
+  },
+  calfraise: {
+    name: "Calf raises", cat: "early",
+    when: "Day 8: 3 × 15",
+    why: "The calf crosses the knee and shares work with the hamstring. Strong calves make the hikes and the return to running easier.",
+    setup: ["Stand with fingertips on a wall or counter, feet hip-width. For more range, stand on a step with your heels hanging off."],
+    steps: [
+      "Rise onto the balls of your feet as high as you can.",
+      "Pause 1 second at the top.",
+      "Lower slowly over about 2 seconds."
+    ],
+    feel: "Calves.",
+    stop: ["Pain in the back of the knee or thigh: smaller range."],
+    mistakes: ["Bouncing.", "Rolling out onto your little toes."],
+    easier: "Smaller range.",
+    harder: "Single-leg, or hold a dumbbell in your right hand.",
+    mods: ["Left wrist: fingertips on the wall only. Don't lean on the palm."],
+    video: "standing calf raise form",
+    fig: {
+      a: { hip: [0, 46], torso: 90, A: { hand: [21, 55], bend: -1 }, L: { ankle: [0, 4], bend: 1 }, R: { ankle: [0, 4], bend: 1 } },
+      b: { hip: [0, 51.5], torso: 90, A: { hand: [21, 60], bend: -1 }, L: { ankle: [0, 9.6], bend: 1, ft: -52 }, R: { ankle: [0, 9.6], bend: 1, ft: -52 } },
+      props: [FL(-16, 32), { t: "rect", x: 21, y: 0, w: 7, h: 88, r: 1 }],
+      over: [{ t: "arrow", from: [-6, 4], to: [-6, 12] }]
+    }
+  },
+  slidecurl: {
+    name: "Sliding leg curls", cat: "early",
+    when: "Day 10: both legs, short range, 3 × 6 · Week 3: both legs · Week 4: single-leg",
+    why: "Works the hamstring at the knee, including the slow lowering phase that protects against re-injury, with body weight only.",
+    setup: ["Lie on your back with your heels on towels (smooth floor) or sliders, knees bent. Lift into a bridge."],
+    steps: [
+      "Keeping your hips up, slowly slide your heels away from you over about 3 seconds.",
+      "Go only part way at first. Stop before your hips drop or it hurts.",
+      "Pull your heels back in to the start with your hips still up. That's one rep."
+    ],
+    feel: "The backs of both thighs working hard on the way out.",
+    stop: ["Cramp or pain over 3/10: shorten the slide.", "Sharp pain or a pull: stop for the day."],
+    mistakes: ["Letting the hips sink as the heels slide out.", "Sliding out fast."],
+    easier: "Slide out only, then lower your hips and reset (the lowering half only).",
+    harder: "A longer slide. Single-leg from Week 4, the other leg held up.",
+    mods: ["Low back: keep your ribs down, no arching."],
+    video: "sliding leg curl towel hamstring",
+    fig: {
+      a: sup({ hip: [-2.5, 18.5], torso: 205, A: { up: -1, fo: -1 }, L: { ankle: [22, 4], bend: 1, ft: 12 }, R: { ankle: [22, 4], bend: 1, ft: 12 } }),
+      b: sup({ hip: [-1, 12], torso: 192, A: { up: -1, fo: -1 }, L: { ankle: [37, 4], bend: 1, ft: 70 }, R: { ankle: [37, 4], bend: 1, ft: 70 } }),
+      props: [FL(-50, 48)],
+      propsA: [{ t: "towel", at: "a.legL.ankle" }],
+      propsB: [{ t: "towel", at: "b.legL.ankle" }],
+      over: [{ t: "arrow", from: [23, 12], to: [37, 12], dbl: true }]
+    }
+  },
+  boxsquat: {
+    name: "Box squats", cat: "early",
+    when: "Day 10: bodyweight, 3 × 10",
+    why: "Brings squatting back with the depth set by a box, so the hamstring doesn't get squashed or stretched at the bottom.",
+    setup: ["Stand in front of a bench or box about knee height, feet shoulder-width. Arms forward for balance."],
+    steps: [
+      "Sit back and down until you lightly touch the box. Don't drop onto it.",
+      "Pause a beat without relaxing.",
+      "Stand up by pushing the floor away. That's one rep."
+    ],
+    feel: "Quads and glutes. Little in the hamstring.",
+    stop: ["Pain at the bottom: use a higher box."],
+    mistakes: ["Plopping onto the box.", "Knees caving in.", "Heels lifting."],
+    easier: "Higher box.",
+    harder: "Lower box. From Week 3, loaded squats on the Smith.",
+    mods: ["Low back: bodyweight only for now; no bar on your back."],
+    video: "bodyweight box squat",
+    fig: {
+      a: { hip: [0, 45.5], torso: 90, A: { up: 0, fo: 0 }, L: { ankle: [3, 4], bend: 1 }, R: { ankle: [3, 4], bend: 1 } },
+      b: { hip: [-11, 26], torso: 55, A: { up: 12, fo: 12 }, L: { ankle: [3, 4], bend: 1 }, R: { ankle: [3, 4], bend: 1 } },
+      props: [FL(-34, 22), { t: "rect", x: -26, y: 0, w: 20, h: 21, r: 2 }],
+      over: [{ t: "arrow", from: "a.hip", to: "b.hip", oa: [-7, -2], ob: [-3, 5], bulge: 5 }]
+    }
+  },
+
+  /* ---------------- CORE TAIL ---------------- */
+  core: {
+    name: "Core tail", cat: "core", composite: ["deadbug", "sideplank", "pallof"],
+    when: "Strength days in the plan · keep it after you're back",
+    why: "Trunk-control work is linked to much lower re-injury rates (7.7% vs 70% in one trial), and low-back problems raise hamstring injury risk.",
+    doses: { deadbug: "2 × 8 each side", sideplank: "2 × 20–30 sec each side", pallof: "2 × 10 each side" },
+    doseNote: "The plan doesn't set reps for the core tail. These are sensible starting doses; add time or reps as they get easy.",
+    video: ""
+  },
+  deadbug: {
+    name: "Dead bug", cat: "core",
+    when: "Core tail · 2 × 8 each side",
+    why: "Trains your trunk to stay still while your arms and legs move. That's the job it has when you run.",
+    setup: ["Lie on your back, arms pointing at the ceiling, hips and knees bent to 90°. Gently press your low back into the floor."],
+    steps: [
+      "Slowly lower your right arm overhead and your left heel toward the floor at the same time, keeping the knee bent.",
+      "Stop before your low back lifts off the floor. Breathe out as you lower.",
+      "Come back and switch sides. Each side is one rep."
+    ],
+    feel: "Deep abs working to keep your back still.",
+    stop: ["Your back arches off the floor: shorten the reach."],
+    mistakes: ["Arching the back.", "Rushing.", "Holding your breath."],
+    easier: "Move only the legs, or only the arms.",
+    harder: "Straighten the leg as it lowers, but only once the left hamstring is fine with that. It adds stretch.",
+    mods: ["Keep the left knee bent for now; a straight-leg dead bug puts the hamstring on stretch.", "Low back: this is the back-friendly core move. The whole point is a still low back."],
+    video: "dead bug exercise form",
+    fig: {
+      a: sup({ A: { up: 90, fo: 90 }, B: { up: 90, fo: 90 }, L: { th: 90, sh: 0, ft: 60 }, R: { th: 90, sh: 0, ft: 60 } }),
+      b: sup({ A: { up: 90, fo: 90 }, B: { up: 168, fo: 174 }, L: { th: 40, sh: -38, ft: 30 }, R: { th: 90, sh: 0, ft: 60 } }),
+      props: [FL(-64, 46)],
+      over: [{ t: "arrow", from: "a.legL.ankle", to: "b.legL.ankle", oa: [4, 0], ob: [4, 2], bulge: -6 },
+             { t: "arrow", from: "a.armB.hand", to: "b.armB.hand", oa: [-3, 2], ob: [0, 5], bulge: 8 }]
+    }
+  },
+  sideplank: {
+    name: "Side plank", cat: "core",
+    when: "Core tail · 2 × 20–30 sec each side",
+    why: "Works the sides of your trunk and hips, which steady the pelvis when you run and cut.",
+    setup: ["Lie on your side, elbow under your shoulder, forearm on the floor. Knees bent (easier) or legs straight and stacked."],
+    steps: [
+      "Lift your hips so you're in a straight line from head to knees (or feet).",
+      "Hold 20–30 seconds, breathing normally.",
+      "Lower, switch sides."
+    ],
+    feel: "The side of your trunk and the hip on the bottom side.",
+    stop: ["Shoulder pain: switch to the knees-bent version or shorten the hold."],
+    mistakes: ["Hips sagging or piking up.", "Shoulder shrugging up toward your ear."],
+    easier: "Knees bent.",
+    harder: "Legs straight, longer holds, or lift the top leg.",
+    mods: [
+      "Left wrist: on the forearm the weight goes through the elbow, not the wrist. Keep the hand relaxed in a loose fist.",
+      "Left shoulder: if lying on the left side bothers it, do knees-bent on that side."
+    ],
+    video: "forearm side plank form",
+    fig: {
+      a: { hip: [0, 5], torso: 151.7, A: { up: -90, fo: 180 }, B: { hand: [4, 14], bend: 1 }, L: { ankle: [40, 3], bend: 1, nofoot: true }, R: { ankle: [40, 5.5], bend: 1, nofoot: true } },
+      b: { hip: [0, 12.7], torso: 166.4, A: { up: -90, fo: 180 }, B: { hand: [4, 20], bend: 1 }, L: { ankle: [40, 3], bend: 1, nofoot: true }, R: { ankle: [40, 5.5], bend: 1, nofoot: true } },
+      props: [FL(-48, 46)],
+      over: [{ t: "arrow", from: [6, 5], to: [6, 13] }]
+    }
+  },
+  pallof: {
+    name: "Pallof press", cat: "core",
+    when: "Core tail · 2 × 10 each side",
+    why: "Trains your trunk to resist twisting, the way it has to when you plant and cut.",
+    setup: [
+      "Set a cable handle at chest height. Stand side-on to the stack, feet shoulder-width, knees soft.",
+      "Step far enough away that the cable has tension, and hold the handle at your chest with both hands."
+    ],
+    steps: [
+      "Brace, then press the handle straight out in front of your chest.",
+      "Hold 2 seconds without letting the cable turn you toward the stack.",
+      "Bring it back to your chest. Do all reps, then turn and face the other way."
+    ],
+    feel: "Obliques and deep abs resisting rotation.",
+    stop: ["Low-back pain: lighten it and stand taller."],
+    mistakes: ["Rotating toward the stack.", "Leaning away from the cable.", "Going too heavy."],
+    easier: "Lighter weight, or stand closer to the stack.",
+    harder: "Step farther out, add weight, or hold longer.",
+    mods: [
+      "Left wrist: neutral grip, wrist straight.",
+      "Left shoulder: your arms stay in front of you, well away from the position that bothers it."
+    ],
+    video: "Pallof press cable form",
+    fig: { custom: "pallof" }
+  },
+
+  /* ---------------- STRENGTH (WEEKS 3–6) ---------------- */
+  pullthrough: {
+    name: "Cable pull-throughs", cat: "str",
+    when: "Week 3 strength days · suggested 3 × 10",
+    why: "A hip hinge where the load pulls from behind instead of pressing down on your spine. Glutes and hamstrings work without a bar loading your spine.",
+    setup: [
+      "Rope attachment on a low cable. Face away from the stack with the rope between your legs.",
+      "Walk out 2–3 steps so the weight lifts. Feet a bit wider than your hips."
+    ],
+    steps: [
+      "Soft knees. Push your hips back and let the rope pull your hands back between your legs, back flat.",
+      "Stop when you feel the hamstrings load, or before your back wants to round.",
+      "Drive your hips forward to stand tall and squeeze your glutes. Don't lean back at the top."
+    ],
+    feel: "Glutes and hamstrings.",
+    stop: ["Pain over 3/10 in the left hamstring: shorten the hinge."],
+    mistakes: ["Squatting it with the knees forward instead of hinging.", "Pulling with the arms.", "Leaning back at the top."],
+    easier: "Lighter, shorter hinge.",
+    harder: "More weight, slower lowering.",
+    mods: ["Low back: your back-friendly hinge. Finish tall; don't lean back."],
+    video: "cable pull through form",
+    fig: {
+      a: { hip: [-6, 42], torso: 32, A: { hand: [7, 27], bend: 1 }, L: { ankle: [3, 4], bend: 1 }, R: { ankle: [3, 4], bend: 1 } },
+      b: { hip: [0, 45.5], torso: 90, A: { hand: [7, 40], bend: 1 }, L: { ankle: [3, 4], bend: 1 }, R: { ankle: [3, 4], bend: 1 } },
+      props: [FL(-52, 30), { t: "rect", x: -52, y: 0, w: 9, h: 80, r: 1.5 }],
+      propsA: [{ t: "line", a: [-43, 6], b: "a.armA.hand", cls: "f-cable" }],
+      propsB: [{ t: "line", a: [-43, 6], b: "b.armA.hand", cls: "f-cable" }],
+      over: [{ t: "arrow", from: "a.hip", to: "b.hip", oa: [-6, 6], ob: [-6, 6], bulge: 4 }]
+    }
+  },
+  smithsquat: {
+    name: "Smith squats", cat: "str",
+    when: "Week 3: about 60% of your usual weight · suggested 3 × 8",
+    why: "Brings loaded squatting back on a fixed bar path, at reduced weight.",
+    setup: ["Bar across your upper back in the Smith, feet shoulder-width and slightly in front of the bar."],
+    steps: [
+      "Unrack, brace, and sit down between your heels to about parallel, or the depth that stays pain-free.",
+      "Drive up through your whole foot to standing."
+    ],
+    feel: "Quads and glutes.",
+    stop: ["Pain over 3/10 in the left hamstring at the bottom: stop a little higher."],
+    mistakes: ["Knees caving in.", "Low back rounding at the bottom (butt wink)."],
+    easier: "Lighter, or a box at the bottom to set depth.",
+    harder: "Work back toward your usual weight over the following weeks.",
+    mods: ["Low back: moderate load, stop above the depth where your low back starts to round."],
+    video: "Smith machine squat form",
+    fig: {
+      a: { hip: [0, 45.5], torso: 90, A: { up: -110, fo: 80 }, L: { ankle: [6, 4], bend: 1 }, R: { ankle: [6, 4], bend: 1 } },
+      b: { hip: [-16, 26], torso: 55, A: { up: -145, fo: 45 }, L: { ankle: [6, 4], bend: 1 }, R: { ankle: [6, 4], bend: 1 } },
+      props: [FL(-30, 24), { t: "line", a: [-2, 0], b: [-2, 92], cls: "f-rail" }],
+      propsA: [{ t: "circle", c: "a.sh", off: [-2, 1.5], r: 2.8, cls: "f-bar" }],
+      propsB: [{ t: "circle", c: "b.sh", off: [-2, 1.5], r: 2.8, cls: "f-bar" }],
+      over: [{ t: "arrow", from: [8, 74], to: [8, 52] }]
+    }
+  },
+  eccurl: {
+    name: "Eccentric leg curls", cat: "str",
+    when: "Week 3: light · Week 4: heavier · suggested 3 × 6",
+    why: "Loads the hamstring while it lengthens under control, the kind of strength that protects against re-injury. Two legs lift, the left lowers alone.",
+    setup: ["Leg curl machine, seated or lying. Pick a weight you could curl easily with both legs."],
+    steps: [
+      "Curl the weight up with both legs.",
+      "Take the right leg off and lower with the left alone over 3–4 seconds.",
+      "Bring the right leg back in and repeat."
+    ],
+    feel: "The left hamstring working hard on the way down.",
+    stop: ["Pain over 3/10 or a sudden pull: stop for the day."],
+    mistakes: ["Letting the weight drop over the last part.", "Hips lifting off the pad on the lying curl."],
+    easier: "Lighter weight.",
+    harder: "Week 4: add weight. The seated machine works the hamstring at a longer length than the lying one, so it's the harder of the two.",
+    mods: ["No curl machine free? Single-leg sliding curls do a similar job."],
+    video: "eccentric hamstring curl two up one down",
+    fig: {
+      a: { hip: [10, 26], torso: 180, headDir: 172, A: { hand: [-13, 16], bend: 1 }, L: { th: 0, sh: 96, ft: 30 }, R: { th: 0, sh: 96, ft: 30 } },
+      b: { hip: [10, 26], torso: 180, headDir: 172, A: { hand: [-13, 16], bend: 1 }, L: { th: 0, sh: 6, ft: -40 }, R: { th: 0, sh: 72, ft: 10 } },
+      props: [FL(-44, 60), { t: "rect", x: -40, y: 18, w: 70, h: 4, r: 1.5 }, { t: "line", a: [-30, 0], b: [-30, 18], cls: "f-propline" }, { t: "line", a: [22, 0], b: [22, 18], cls: "f-propline" }],
+      propsA: [{ t: "circle", c: "a.legL.ankle", off: [2.5, -1], r: 2.6, cls: "f-bar" }],
+      propsB: [{ t: "circle", c: "b.legL.ankle", off: [0, 3], r: 2.6, cls: "f-bar" }],
+      over: [{ t: "arrow", from: [38, 50], to: [55, 34], bulge: -6 }, { t: "text", x: 54, y: 48, s: "3–4 s", anchor: "start" }]
+    }
+  },
+  nordic: {
+    name: "Nordic curls", cat: "str",
+    when: "Week 4: band-assisted 2 × 4 · Weeks 5–6: 3 × 5, less band · then 1–2× a week, indefinitely",
+    why: "The best-studied hamstring protection exercise. Programs that include Nordics cut hamstring injuries roughly in half.",
+    setup: [
+      "Kneel on a pad with your ankles anchored. Under a padded Smith bar set low works.",
+      "Loop a band around your chest, anchored high behind you, for help.",
+      "Put a padded bench in front of you to catch yourself on."
+    ],
+    steps: [
+      "Body straight from knees to shoulders, hips locked. No bending at the hips.",
+      "Lower yourself forward as slowly as you can, resisting with your hamstrings.",
+      "When you can't hold it any longer, catch yourself on your forearms on the bench.",
+      "Push back lightly and let the band help you back to kneeling. Resting between reps is fine."
+    ],
+    feel: "Hard hamstring work in both legs, especially late in the lowering.",
+    stop: ["Sharp pain or a pull on the left: stop for the day.", "Soreness for a day or two after the first sessions is normal. Never do them the day before a run."],
+    mistakes: ["Bending at the hips to make it easier.", "Dropping fast through the first half.", "Catching yourself on flat hands."],
+    easier: "Thicker band, or catch earlier.",
+    harder: "Thinner band, lower farther before you catch.",
+    mods: [
+      "Left wrist: always catch on your forearms on a padded bench, never on flat hands.",
+      "Right knee: plenty of padding under both knees."
+    ],
+    video: "band assisted Nordic hamstring curl",
+    fig: {
+      a: { hip: [0, 24.5], torso: 90, A: { up: -58, fo: 62 }, L: { th: -90, sh: 180, ft: 205 }, R: { th: -90, sh: 180, ft: 205 } },
+      b: { hip: [18.2, 14], torso: 30, headDir: 30, A: { hand: [60, 21], bend: -1 }, L: { th: 210, sh: 180, ft: 205 }, R: { th: 210, sh: 180, ft: 205 } },
+      props: [FL(-38, 76), { t: "rect", x: -4, y: 0, w: 10, h: 1.8, r: .9, cls: "f-towel" }, { t: "rect", x: 50, y: 0, w: 24, h: 19, r: 2 },
+        { t: "circle", c: [-18, 7.5], r: 3.2, cls: "f-bar" }, { t: "line", a: [-18, 0], b: [-18, 30], cls: "f-rail" }],
+      propsA: [{ t: "line", a: "a.sh", b: [-30, 88], cls: "f-band" }],
+      propsB: [{ t: "line", a: "b.sh", b: [-30, 88], cls: "f-band" }],
+      over: [{ t: "arrow", from: "a.head", to: "b.head", oa: [6, 3], ob: [2, 9], bulge: -9 }]
+    }
+  },
+  smithrdl: {
+    name: "Smith RDLs", cat: "str",
+    when: "Week 4: 50–65 lb with 3-sec lowering · Week 5: back to 95 lb · suggested 3 × 8",
+    why: "A heavier hip hinge that loads the hamstrings at long lengths, on a fixed bar path.",
+    setup: ["Smith bar at mid-thigh height, hands just outside your thighs, feet hip-width under the bar."],
+    steps: [
+      "Unrack and stand tall with soft knees.",
+      "Push your hips back and let the bar slide down your thighs over 3 seconds, back flat.",
+      "Stop around mid-shin, or sooner if your back starts to round or the left pulls.",
+      "Drive your hips forward to stand. Don't lean back at the top."
+    ],
+    feel: "Hamstrings loading on the way down, glutes to stand up.",
+    stop: ["Pain over 3/10 in the left hamstring: stop higher."],
+    mistakes: ["Rounding your back to go deeper.", "Squatting the weight down instead of hinging."],
+    easier: "Lighter, shorter range.",
+    harder: "Back to 95 lb in Week 5, then your normal Lower A/B loads.",
+    mods: ["Low back: depth is set by a flat back, not by the floor.", "Left wrist: neutral grip; straps if grip bothers it."],
+    video: "Smith machine Romanian deadlift form",
+    fig: {
+      a: { hip: [0, 45.5], torso: 90, A: { hand: [4, 42.5], bend: 1 }, L: { ankle: [2, 4], bend: 1 }, R: { ankle: [2, 4], bend: 1 } },
+      b: { hip: [-13, 42.5], torso: 20, A: { hand: [4, 22.5], bend: 1 }, L: { ankle: [2, 4], bend: 1 }, R: { ankle: [2, 4], bend: 1 } },
+      props: [FL(-30, 26), { t: "line", a: [4, 0], b: [4, 92], cls: "f-rail" }],
+      propsA: [{ t: "circle", c: "a.armA.hand", r: 2.8, cls: "f-bar" }],
+      propsB: [{ t: "circle", c: "b.armA.hand", r: 2.8, cls: "f-bar" }],
+      over: [{ t: "arrow", from: [11, 42], to: [11, 24] }]
+    }
+  },
+  bss: {
+    name: "Bulgarian split squats", cat: "str",
+    when: "Week 4: light · suggested 3 × 8 each side",
+    why: "Single-leg strength for running and fielding, without a bar on your back.",
+    setup: ["Rear foot on a bench behind you, laces down. Front foot far enough forward that your front shin stays fairly upright at the bottom."],
+    steps: [
+      "Lower straight down until your back knee is just above the floor.",
+      "Drive through the front heel to stand.",
+      "Do all reps, then switch legs."
+    ],
+    feel: "Glute and quad of the front leg.",
+    stop: ["Pain over 3/10 in the left hamstring: shallower reps."],
+    mistakes: ["Front foot too close, so the knee shoots forward.", "Leaning way forward."],
+    easier: "Bodyweight, shallower.",
+    harder: "Heavier dumbbells as the weeks go on.",
+    mods: ["Right knee: stop above any sharp pain when it's the front leg.", "Left wrist: if holding dumbbells bothers it, use a goblet hold or bodyweight."],
+    video: "Bulgarian split squat form",
+    fig: {
+      a: { hip: [-5, 42], torso: 86, A: { up: -92, fo: -90 }, L: { ankle: [12, 4], bend: 1 }, R: { ankle: [-30, 27], bend: -1, ft: 195 } },
+      b: { hip: [-6, 26], torso: 84, A: { up: -92, fo: -90 }, L: { ankle: [12, 4], bend: 1 }, R: { ankle: [-30, 27], bend: -1, ft: 195 } },
+      props: [FL(-46, 28), { t: "rect", x: -44, y: 0, w: 18, h: 24, r: 2 }],
+      over: [{ t: "arrow", from: [8, 52], to: [8, 38] }]
+    }
+  },
+  upper: {
+    name: "Upper A / Upper B", cat: "str",
+    when: "Your regular upper days · Mon and Thu in Weeks 3–6",
+    why: "Your upper days keep going through rehab. Log the lifts in LiftLog as usual; tick them here so the rehab log shows the full week.",
+    setup: [],
+    steps: [
+      "Seated rows: bend your knees more than usual so the hamstrings stay slack.",
+      "DB rows: chest-supported on an incline bench instead of bent over.",
+      "Anything that has you standing bent over for long: swap it for a supported version until Week 5."
+    ],
+    feel: "", stop: [], mistakes: [], easier: "", harder: "",
+    mods: ["Left shoulder: avoid loaded end-range horizontal abduction (deep flyes, wide end ranges)."],
+    video: ""
+  },
+  lower: {
+    name: "Lower A / Lower B", cat: "str",
+    when: "On hold until Week 3 · return in full in Weeks 5–6",
+    why: "Your regular lower days come back once the hamstring is strong enough. Log the lifts in LiftLog.",
+    setup: [],
+    steps: [
+      "Week 5: Nordics 3 × 5 and the Smith RDL at 95 lb, then the rest of Lower A (Tue) or Lower B (Fri).",
+      "Week 6: full Lower A and B, with Nordics 3 × 5.",
+      "Leg extensions stay out for now because of the right knee."
+    ],
+    feel: "", stop: ["Pain over 3/10 in the left hamstring on any lift: drop the load for that lift."], mistakes: [], easier: "", harder: "",
+    mods: ["Low back: hinges stay on the Smith, cable or kettlebell. No bar loading on your back beyond the Smith."],
+    video: ""
+  },
+
+  /* ---------------- WALKING, CYCLING, RUNNING ---------------- */
+  walk: {
+    name: "Walking", cat: "move",
+    when: "Daily · short walks → 20 min → 25–30 → 30–40 → 40–45 min · long walk on Saturdays in Weeks 3–6",
+    why: "Frequent, gentle loading. And the limp is one of your key checkpoints (Day 7, Day 14, the trip check).",
+    setup: [],
+    steps: [
+      "Take the longest stride that stays pain-free: heel first, rolling through to push off your toes.",
+      "Shorter, quicker steps beat a long, limping stride.",
+      "Flat routes first. Hills come in with the trip-check walk."
+    ],
+    feel: "Maybe some tightness at the back of the thigh on longer strides.",
+    stop: ["The limp gets worse or pain passes 3/10: slow down and cut the walk short."],
+    mistakes: ["Walking stiff-legged to avoid bending the knee.", "Pushing through a worsening limp to hit a time."],
+    easier: "Shorter walks, more often.",
+    harder: "Longer, then brisker, then hills.",
+    mods: [],
+    video: "",
+    fig: {
+      b: { hip: [0, 44.5], torso: 87, A: { up: -112, fo: -96 }, B: { up: -68, fo: -52 }, L: { ankle: [13, 4.5], bend: 1, ft: 12 }, R: { ankle: [-12, 7], bend: 1, ft: -48 } },
+      props: [FL(-24, 30)]
+    }
+  },
+  peloton: {
+    name: "Peloton", cat: "move",
+    when: "Day 3: 10 min, easy, no resistance · Day 9: 20–30 min, light resistance · Weeks 3–6: optional easy ride on Wednesdays",
+    why: "Easy cycling moves the knee and hip with no impact and no stretch at long length.",
+    setup: [
+      "Raise the handlebars and sit tall. Leaning forward puts the hamstring on stretch.",
+      "Drop the saddle about half an inch so your knee stays a little more bent at the bottom of the stroke."
+    ],
+    steps: [
+      "Push down only. Don't pull up with the clips; pulling up works the hamstring.",
+      "First ride: start with 5 minutes. If pain stays under 3/10 and the next morning is no worse, do 10 next time.",
+      "Hold off on the 20–30 minute ride until a 10-minute ride feels easy."
+    ],
+    feel: "Easy. Maybe mild tightness at the bottom of the stroke.",
+    stop: ["Pain over 3/10, or a pull at the bottom of the stroke. Walk instead and try again in a few days."],
+    mistakes: ["Low handlebars and a long forward lean.", "Pulling up through the stroke."],
+    easier: "Shorter ride, no resistance.",
+    harder: "Longer, then light resistance.",
+    mods: [],
+    video: "",
+    fig: {
+      b: { hip: [0, 52.5], torso: 72, A: { hand: [34, 64], bend: -1 }, L: { ankle: [11, 14], bend: 1, ft: -8 }, R: { ankle: [9, 27], bend: 1, ft: -5 } },
+      props: [
+        { t: "line", a: [-16, 0], b: [46, 0], cls: "f-propline" },
+        { t: "line", a: [-2, 49], b: [10, 17], cls: "f-propline" },
+        { t: "line", a: [-6, 50], b: [5, 50], cls: "f-rail" },
+        { t: "line", a: [34, 20], b: [34, 64], cls: "f-propline" },
+        { t: "line", a: [10, 17], b: [34, 20], cls: "f-propline" },
+        { t: "line", a: [34, 20], b: [44, 0], cls: "f-propline" },
+        { t: "line", a: [10, 17], b: [-8, 0], cls: "f-propline" },
+        { t: "circle", c: [34, 20], r: 12, cls: "f-wheel" },
+        { t: "circle", c: [10, 17], r: 7, cls: "f-wheel" },
+        { t: "line", a: [31, 64], b: [38, 64], cls: "f-rail" }
+      ],
+      over: [{ t: "arrow", from: [19, 27], to: [19, 11] }, { t: "text", x: 48, y: 40, s: "push down only", anchor: "start" }]
+    }
+  },
+  warmup: {
+    name: "Run warm-up", cat: "move",
+    when: "Before strides, sprints and the 100% test · before every softball game once you're back",
+    why: "Tired or cold hamstrings strain more easily. This takes about 10 minutes.",
+    setup: ["For leg swings, stand side-on to a fence or wall with one hand on it."],
+    steps: [
+      "Easy jog, about 5 minutes.",
+      "Leg swings: 10 each leg front-to-back, starting small and letting the range grow. Never force the top of the swing.",
+      "Then 10 side-to-side swings each leg, facing the wall.",
+      "3–4 build-up runs: accelerate smoothly over 40–60 m to about 70–80%, ease off gradually."
+    ],
+    feel: "Warm, loose, a little faster each run.",
+    stop: ["Any pull in the warm-up: no fast running today."],
+    mistakes: ["Swinging hard into a stretch.", "Going straight from the car to sprinting."],
+    easier: "", harder: "",
+    mods: [],
+    video: "dynamic leg swings warm up",
+    fig: {
+      a: { hip: [0, 45.5], torso: 90, A: { hand: [5, 47], bend: 1 }, L: { th: -122, sh: -118, ft: -40 }, R: { ankle: [0, 4], bend: 1 } },
+      b: { hip: [0, 45.5], torso: 90, A: { hand: [5, 47], bend: 1 }, L: { th: -45, sh: -42, ft: 20 }, R: { ankle: [0, 4], bend: 1 } },
+      props: [FL(-34, 42), { t: "line", a: [5, 0], b: [5, 49], cls: "f-rail" }],
+      over: [{ t: "arrow", from: "a.legL.ankle", to: "b.legL.ankle", oa: [0, -5], ob: [0, -5], bulge: 12, dbl: true }]
+    }
+  },
+  jogwalk: {
+    name: "Jog/walk intervals", cat: "move",
+    when: "Week 3 · Mon: 6 × (1 min easy jog + 1 min walk) · Thu: 8 × (2 min jog + 1 min walk)",
+    why: "The first running since the injury, broken into short pieces so you can stop the moment anything feels off.",
+    setup: ["Flat surface: track, road, or treadmill. Start with a few minutes of brisk walking."],
+    steps: [
+      "Jog at a conversational pace with a short, relaxed stride, feet landing under your hips.",
+      "Walk the recovery minute fully.",
+      "Thursday's longer version only if Monday felt easy and the next morning was fine. Otherwise repeat Monday."
+    ],
+    feel: "Easy. You could talk the whole time.",
+    stop: ["Pain above 2/10, a pull, or you notice you're changing your stride: walk the rest."],
+    mistakes: ["Running faster than conversational.", "Hills or uneven trails this early."],
+    easier: "Repeat Monday's version.",
+    harder: "Move on when 8 rounds of 2-min jogs feel easy, pain stays at 2/10 or less, and mornings are no worse.",
+    mods: [],
+    video: "",
+    fig: {
+      b: { hip: [0, 45.5], torso: 84, A: { up: -120, fo: -30 }, B: { up: -60, fo: 20 }, L: { th: -62, sh: -104, ft: -15 }, R: { th: -112, sh: -150, ft: -80 } },
+      props: [FL(-28, 26)]
+    }
+  },
+  buildups: {
+    name: "Build-ups", cat: "move",
+    when: "Week 4 · after a 15–20 min easy jog: 6 × 60 m to 60–70% speed",
+    why: "Brings speed back gradually, with the fastest part short and under control.",
+    setup: ["Mark out about 60 m on a flat surface, plus 20 m to slow down."],
+    steps: [
+      "Start at a jog and smoothly speed up over the 60 m to 60–70% of your top speed: quick but relaxed, not a sprint.",
+      "Ease off gradually over the next 20 m. Never brake hard.",
+      "Walk back to the start to recover."
+    ],
+    feel: "Smooth and relaxed at the top speed.",
+    stop: ["Any tightness or hesitation: finish with easy jogging only."],
+    mistakes: ["Going past 70%.", "Stopping abruptly at the end."],
+    easier: "Keep to 60%.",
+    harder: "Move on when build-ups to 70% feel smooth and pain-free, and mornings are no worse.",
+    mods: [],
+    video: "",
+    fig: {
+      b: { hip: [0, 46], torso: 80, A: { up: -130, fo: -40 }, B: { up: -50, fo: 40 }, L: { th: -48, sh: -100, ft: -15 }, R: { th: -118, sh: -168, ft: -90 } },
+      props: [FL(-34, 28)]
+    }
+  },
+  strides: {
+    name: "Strides", cat: "move",
+    when: "Week 5 · 6–8 × 60 m at 80–90%",
+    why: "Near-top speed, which is when hamstrings get hurt. Done fresh, warm and controlled, they rebuild that tolerance.",
+    setup: ["Full warm-up first (easy jog, leg swings, build-ups)."],
+    steps: [
+      "Build to 80–90% over the first 20 m.",
+      "Hold it, relaxed, for 20–30 m: tall posture, loose shoulders, quick feet under you.",
+      "Ease down gradually. Walk back for full recovery."
+    ],
+    feel: "Fast but relaxed.",
+    stop: ["Tightness, pain or hesitation: stop the strides for today."],
+    mistakes: ["Straining for speed.", "Short recoveries."],
+    easier: "Keep to 80%.",
+    harder: "Move on when strides at 90% and cuts feel pain-free, with no hesitation.",
+    mods: [],
+    video: "",
+    fig: {
+      b: { hip: [0, 46], torso: 78, A: { up: -135, fo: -45 }, B: { up: -45, fo: 50 }, L: { th: -40, sh: -95, ft: -15 }, R: { th: -120, sh: -172, ft: -95 } },
+      props: [FL(-34, 28)]
+    }
+  },
+  cuts: {
+    name: "Side shuffles and cuts", cat: "move",
+    when: "Week 5 · after strides",
+    why: "Softball means sudden sideways and diagonal moves. These bring them back in a controlled way.",
+    setup: ["Two cones about 10–15 m apart for shuffles; one cone for cuts."],
+    steps: [
+      "Side shuffles: athletic stance, stay low, don't click your feet together. 2 × 10–15 m each direction.",
+      "Cuts: jog toward the cone, plant your outside foot and push off at 45°. Start at half speed.",
+      "As they feel solid: faster approach, then sharper 90° cuts."
+    ],
+    feel: "Quick and controlled.",
+    stop: ["Hesitation or pain on the plant: slow down and go back to wider angles."],
+    mistakes: ["Standing up tall in the shuffle.", "Cutting at full speed on day one."],
+    easier: "Slower, wider angles.",
+    harder: "Faster, sharper, then react to a partner's call.",
+    mods: [],
+    video: "",
+    fig: { custom: "cuts" }
+  },
+  softball: {
+    name: "Softball skills", cat: "move",
+    when: "Week 5 · after Monday and Thursday runs",
+    why: "Gets you back into the real movements before full games.",
+    setup: [],
+    steps: [
+      "Throwing: easy catch, building distance.",
+      "Fielding: grounders hit or rolled to you, moving a few steps each way.",
+      "Easy base running: round a base at a comfortable speed. No all-out sprints until Week 6."
+    ],
+    feel: "", stop: ["Any hesitation or a pull: stop and finish with throwing only."], mistakes: [], easier: "", harder: "",
+    mods: ["Left shoulder: build throwing distance gradually."],
+    video: ""
+  },
+  sprints: {
+    name: "Full-speed sprints", cat: "move",
+    when: "Week 6 · Mon: 4–6 × 30–40 m at full speed, 2–3 min rest",
+    why: "The last step before the test. Short distances and full rest keep the hamstrings fresh for every rep.",
+    setup: ["Full warm-up: easy jog, leg swings, 3–4 build-ups."],
+    steps: [
+      "Accelerate to full speed and hold it briefly.",
+      "Slow down gradually over 20 m or so.",
+      "Walk back and rest a full 2–3 minutes before the next one."
+    ],
+    feel: "Fast, and secure in the left leg.",
+    stop: ["Any tightness or hesitation: end the session there."],
+    mistakes: ["Cutting the rest short.", "Sprinting on tired legs, like the day after lower-body strength."],
+    easier: "Fewer reps, 90% speed.",
+    harder: "",
+    mods: [],
+    video: "",
+    fig: {
+      b: { hip: [0, 46], torso: 72, A: { up: -140, fo: -50 }, B: { up: -35, fo: 60 }, L: { th: -30, sh: -92, ft: -15 }, R: { th: -125, sh: -178, ft: -98 } },
+      props: [FL(-36, 30)]
+    }
+  },
+
+  /* ---------------- CHECKS & TESTS ---------------- */
+  tripcheck: {
+    name: "Trip check", cat: "test",
+    when: "Day 11, or 2–3 days before you leave if that's sooner",
+    why: "Tells you how much hiking the leg is ready for.",
+    setup: [],
+    steps: [
+      "Walk 45–60 minutes briskly with hills or stairs. Check: no limp, pain 2/10 or less.",
+      "Next morning: no worse than the morning of the walk.",
+      "Single-leg bridges and the Diver feel easy."
+    ],
+    feel: "",
+    stop: ["Pain climbing past 3/10 on the walk: head back at an easy pace."],
+    mistakes: [],
+    easier: "", harder: "",
+    result: [["Pass all three", "Moderate hikes are fine."], ["Pass 1 and 2", "Stick to easier, flatter trails."], ["Otherwise", "Keep it to sightseeing-level walking."]],
+    mods: [],
+    video: "",
+    fig: {
+      b: { hip: [0, 44.5], torso: 84, A: { hand: [14, 33], bend: -1 }, B: { hand: [-6, 32], bend: -1 }, L: { ankle: [13, 4.5], bend: 1, ft: 12 }, R: { ankle: [-12, 7], bend: 1, ft: -48 } },
+      props: [FL(-26, 34), { t: "line", a: [14, 33], b: [22, 0], cls: "f-pole" }, { t: "line", a: [-6, 32], b: [-2, 0], cls: "f-pole" }]
+    }
+  },
+  sprinttest: {
+    name: "Sprint test", cat: "test",
+    when: "Week 6 · Thursday",
+    why: "Part 1 of the 100% test.",
+    setup: ["Full warm-up: easy jog, leg swings, 3–4 build-ups."],
+    steps: [
+      "Run several full-speed sprints of 30–40 m with full rest between them.",
+      "Pass: no pain and no hesitation, and you feel fine the next morning."
+    ],
+    feel: "", stop: ["Any tightness or hesitation: stop. That's a fail for today; repeat Week 5 and retest."], mistakes: [], easier: "", harder: "",
+    mods: [], video: "",
+    fig: {
+      b: { hip: [0, 46], torso: 72, A: { up: -140, fo: -50 }, B: { up: -35, fo: 60 }, L: { th: -30, sh: -92, ft: -15 }, R: { th: -125, sh: -178, ft: -98 } },
+      props: [FL(-36, 30)]
+    }
+  },
+  kicktest: {
+    name: "Kick test", cat: "test",
+    when: "Week 6 · Thursday, after the sprints",
+    why: "Part 2 of the 100% test. A fast kick puts the hamstring at long length and high speed, which is how it was hurt.",
+    setup: ["Warm up first. Lie on your back, both legs straight."],
+    steps: [
+      "Right leg first: kick it straight up toward the ceiling a few times, building to as fast as you can.",
+      "Then the left, building up the same way.",
+      "Pass: the left feels as secure as the right, with no hesitation."
+    ],
+    feel: "", stop: ["Any pain or apprehension on the left: stop. That's a fail for today."], mistakes: ["Going full speed on the first kick."], easier: "", harder: "",
+    mods: [], video: "Askling H-test active hamstring",
+    fig: {
+      a: sup({ L: FLAT, R: FLAT }),
+      b: sup({ L: { th: 78, sh: 78, ft: 150 }, R: FLAT }),
+      props: [FL(-50, 50)],
+      over: [{ t: "arrow", from: "a.legL.ankle", to: "b.legL.ankle", oa: [3, 6], ob: [8, 2], bulge: -14 }]
+    }
+  },
+  slr: {
+    name: "Straight-leg raise", cat: "test",
+    when: "Week 6 · Thursday · part of the 100% test",
+    why: "Part 4 of the 100% test: equal range side to side.",
+    setup: ["Lie on your back, both legs straight, ankles relaxed."],
+    steps: [
+      "Lift one straight leg slowly, knee locked, until you feel a firm stretch. Note how high it goes.",
+      "Lower it and do the other side.",
+      "Pass: about even side to side. A phone photo from the side makes it easy to compare."
+    ],
+    feel: "A firm stretch, not pain.", stop: ["Pain on the left: stop there."], mistakes: ["Bending the knee.", "Lifting the other leg or your hips off the floor."], easier: "", harder: "",
+    mods: [], video: "",
+    fig: {
+      b: sup({ L: { th: 70, sh: 70, ft: 140 }, R: FLAT }),
+      props: [FL(-50, 50), { t: "arc", c: [0, LY], r: 13, a1: -2, a2: 68 }],
+      over: [{ t: "text", x: 19, y: 16, s: "compare sides", anchor: "start" }]
+    }
+  },
+  curltest: {
+    name: "Single-leg curl check", cat: "test",
+    when: "Week 6 · Friday, at the start of the session",
+    why: "Part 3 of the 100% test: strength side to side.",
+    setup: ["Leg curl machine. Choose a weight you can curl about 10–15 times with the right leg alone."],
+    steps: [
+      "Warm up with a couple of light two-leg sets.",
+      "Right leg alone: as many good reps as you can. Rest 2–3 minutes.",
+      "Left leg alone, same weight: as many good reps as you can.",
+      "Pass: left reps are within 10% of the right's (right 12 → left 11 or more)."
+    ],
+    feel: "", stop: ["Pain on the left: stop. That counts as a fail for today."], mistakes: ["Different weight or setup for each side.", "Doing the left first while you're fresher."], easier: "", harder: "",
+    mods: [], video: "",
+    fig: {
+      a: { hip: [10, 26], torso: 180, headDir: 172, A: { hand: [-13, 16], bend: 1 }, L: { th: 0, sh: 6, ft: -40 }, R: { th: -3, sh: 2, ft: -40 } },
+      b: { hip: [10, 26], torso: 180, headDir: 172, A: { hand: [-13, 16], bend: 1 }, L: { th: 0, sh: 96, ft: 30 }, R: { th: -3, sh: 2, ft: -40 } },
+      props: [FL(-44, 60), { t: "rect", x: -40, y: 18, w: 70, h: 4, r: 1.5 }, { t: "line", a: [-30, 0], b: [-30, 18], cls: "f-propline" }, { t: "line", a: [22, 0], b: [22, 18], cls: "f-propline" }],
+      propsB: [{ t: "circle", c: "b.legL.ankle", off: [2.5, -1], r: 2.6, cls: "f-bar" }],
+      over: [{ t: "arrow", from: [55, 34], to: [38, 50], bulge: 6 }]
+    }
+  },
+
+  /* ---------------- EVERYDAY & TRAVEL ---------------- */
+  ice: {
+    name: "Ice", cat: "life",
+    when: "Week 1 · 15–20 min after activity",
+    why: "Pain relief after activity in the first days. Use it if it helps; skip it if it doesn't.",
+    setup: ["Wrap the ice pack in a thin towel."],
+    steps: [
+      "Lie face down with the pack on the sore spot on the back of the thigh. Sitting on it presses on the sore area.",
+      "15–20 minutes. Check the skin after 5: numb, white or blotchy patches mean take it off.",
+      "Leave at least an hour between rounds."
+    ],
+    feel: "Cold, then numb-ish.", stop: ["Burning or blotchy skin: take it off."], mistakes: ["Ice straight on bare skin.", "Falling asleep with it on."], easier: "", harder: "",
+    mods: [], video: "",
+    fig: {
+      b: { hip: [0, LY], torso: 180, headDir: 172, A: { hand: [-40, 9], bend: 1 }, L: { th: -3, sh: -2, ft: -55 }, R: { th: -3, sh: -2, ft: -55 } },
+      props: [FL(-54, 50)],
+      over: [{ t: "rect", x: 7, y: 7, w: 12, h: 4, r: 1.5, cls: "f-ice" }]
+    }
+  },
+  everyday: {
+    name: "Everyday moves", cat: "life",
+    when: "Weeks 1–2, while bending and sitting still hurt",
+    why: "Deep bending and pressure on the back of the thigh are what hurt early on. These keep the left hamstring short and out of the way.",
+    setup: [],
+    steps: [
+      "Picking things up: stand on your right leg and let the left float back as you reach down, like a golfer picking up a ball. Or drop onto your left knee.",
+      "Car: slide the seat forward so your knee bends more, recline a notch, and sit on a folded towel so your thigh lifts off the seat edge.",
+      "Shoes: foot up on an elevated surface with the knee at 90°, or slip-ons for now.",
+      "Stairs and curbs: lead with your right foot going up and your left going down, hand on the rail."
+    ],
+    feel: "", stop: [], mistakes: ["Bending straight-legged to pick things up. The RDL-style bend stretches the left hamstring."], easier: "", harder: "",
+    mods: [], video: "",
+    fig: {
+      b: { hip: [-4, 44], torso: -18, headDir: -24, A: { hand: [29, 3.5], bend: 1 }, B: { up: -60, fo: -80 }, L: { th: 196, sh: 192, ft: 280 }, R: { ankle: [-1, 4], bend: 1 } },
+      props: [FL(-50, 40), { t: "circle", c: [31, 2.6], r: 2.6, cls: "f-bar" }]
+    }
+  },
+  trip: {
+    name: "On the trip", cat: "life",
+    when: "During the trip · until Week 3 starts",
+    why: "Keeps the hamstring loaded while you travel, and keeps the hikes inside what the trip check allowed.",
+    setup: [],
+    steps: [
+      "Use poles, take short steps on steep parts, and don't jog or jump down anything.",
+      "Turn around if pain climbs past 3/10.",
+      "If you fly, get up and walk the aisle every hour or so.",
+      "Routine: Extender 3 × 12 morning and evening, single-leg bridges 3 × 10 daily, Diver 3 × 6 every other day. No equipment needed."
+    ],
+    feel: "",
+    stop: ["Calf swollen, warm or red, especially after a flight: that can be a clot. Get seen the same day."],
+    mistakes: [], easier: "", harder: "",
+    mods: ["Poles: elbows at about 90° on flat ground; shorten them for uphill, lengthen for downhill."],
+    video: "",
+    fig: {
+      b: { hip: [0, 44.5], torso: 84, A: { hand: [14, 33], bend: -1 }, B: { hand: [-6, 32], bend: -1 }, L: { ankle: [13, 4.5], bend: 1, ft: 12 }, R: { ankle: [-12, 7], bend: 1, ft: -48 } },
+      props: [FL(-26, 34), { t: "line", a: [14, 33], b: [22, 0], cls: "f-pole" }, { t: "line", a: [-6, 32], b: [-2, 0], cls: "f-pole" }]
+    }
+  }
+};
+
+/* =====================================================================
+   REHAB LOG — app
+   ===================================================================== */
+const $ = (s, el) => (el || document).querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+/* ---------------- icons ---------------- */
+const sv = (d, w) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w || 2}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const IC = {
+  check: sv('<path d="M5 12.5l4.2 4.2L19 7"/>', 3),
+  left: sv('<path d="M15 5l-7 7 7 7"/>', 2.4),
+  right: sv('<path d="M9 5l7 7-7 7"/>', 2.4),
+  x: sv('<path d="M6 6l12 12M18 6L6 18"/>', 2.4),
+  go: sv('<path d="M5 12.5l4.2 4.2L19 7"/>', 3),
+  pause: sv('<path d="M9 6v12M15 6v12"/>', 3),
+  alert: sv('<path d="M12 7v6"/><path d="M12 17.2v.1"/>', 3.2),
+  info: sv('<path d="M12 11v6"/><path d="M12 7.3v.1"/>', 3),
+  share: sv('<path d="M12 4v11"/><path d="M7.5 8.5L12 4l4.5 4.5"/><path d="M5 13v5a2 2 0 002 2h10a2 2 0 002-2v-5"/>', 2.2),
+  how: sv('<circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.1"/>', 2.4),
+  today: sv('<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.8 2.8L16.5 9.5"/>'),
+  plan: sv('<path d="M9.5 6H20M9.5 12H20M9.5 18H20"/><circle cx="4.8" cy="6" r="1.2"/><circle cx="4.8" cy="12" r="1.2"/><circle cx="4.8" cy="18" r="1.2"/>'),
+  moves: sv('<circle cx="12" cy="4.6" r="2"/><path d="M12 7.5v6.5M12 9.5l-5 2.5M12 9.5l5 2M12 14l-3.6 6.5M12 14l4.2 6"/>'),
+  progress: sv('<path d="M3.5 20h17"/><path d="M4.5 15.5l4.8-4.8 3.8 3 6.4-7.2"/>')
+};
+
+/* ---------------- storage ---------------- */
+const KEY = "rehablog.v1";
+let storageOK = true;
+try { localStorage.setItem("__rl", "1"); localStorage.removeItem("__rl"); } catch (e) { storageOK = false; }
+let memStore = null;
+
+function defaultState() {
+  return {
+    v: 1,
+    cfg: { injury: INJURY_DATE, start: PLAN_START, tripStart: "", tripEnd: "", week3: "", theme: "auto" },
+    holds: [],
+    weekResults: [],
+    logs: {},
+    tests: {
+      trip: { walk: null, morning: null, easy: null, walkDate: "" },
+      final: { sprint: null, kick: null, range: null, w: "", r: "", l: "" },
+      finalLog: []
+    },
+    ui: { previewDismissed: false, lastBackup: "" }
+  };
+}
+function migrate(s) {
+  const d = defaultState();
+  if (!s || typeof s !== "object") return d;
+  s.cfg = Object.assign(d.cfg, s.cfg || {});
+  if (!Array.isArray(s.holds)) s.holds = [];
+  if (!Array.isArray(s.weekResults)) s.weekResults = [];
+  if (!s.logs || typeof s.logs !== "object") s.logs = {};
+  s.tests = s.tests || {};
+  s.tests.trip = Object.assign(d.tests.trip, s.tests.trip || {});
+  s.tests.final = Object.assign(d.tests.final, s.tests.final || {});
+  if (!Array.isArray(s.tests.finalLog)) s.tests.finalLog = [];
+  s.ui = Object.assign(d.ui, s.ui || {});
+  s.v = 1;
+  return s;
+}
+function load() {
+  if (!storageOK) return memStore || (memStore = defaultState());
+  try { const raw = localStorage.getItem(KEY); return migrate(raw ? JSON.parse(raw) : null); }
+  catch (e) { return defaultState(); }
+}
+function save() {
+  planCache.clear();
+  if (!storageOK) { memStore = S; return; }
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+}
+const planCache = new Map();
+let S = load();
+
+/* ---------------- dates ---------------- */
+const pad2 = n => String(n).padStart(2, "0");
+const isoOf = d => d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+const todayStr = () => isoOf(new Date());
+const parseD = iso => { const p = iso.split("-").map(Number); return new Date(p[0], p[1] - 1, p[2], 12); };
+const addDays = (iso, n) => { const d = parseD(iso); d.setDate(d.getDate() + n); return isoOf(d); };
+const diffDays = (a, b) => Math.round((parseD(b) - parseD(a)) / 864e5);
+const dow = iso => (parseD(iso).getDay() + 6) % 7; // Mon = 0
+const DOW3 = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const fmtShort = iso => { const d = parseD(iso); return DOW3[dow(iso)] + " " + (d.getMonth() + 1) + "/" + d.getDate(); };
+const fmtMD = iso => { const d = parseD(iso); return (d.getMonth() + 1) + "/" + d.getDate(); };
+const fmtLong = iso => parseD(iso).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
+const fmtMon = iso => parseD(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+const firstMondayAfter = iso => { let d = addDays(iso, 1); while (dow(d) !== 0) d = addDays(d, 1); return d; };
+const mondayOf = iso => addDays(iso, -dow(iso));
+const ordinal = n => n + (n % 10 === 1 && n % 100 !== 11 ? "st" : n % 10 === 2 && n % 100 !== 12 ? "nd" : n % 10 === 3 && n % 100 !== 13 ? "rd" : "th");
+function relDays(date, today) {
+  const n = diffDays(today, date);
+  if (n === -1) return "Yesterday"; if (n === 1) return "Tomorrow";
+  return n < 0 ? (-n) + " days ago" : "In " + n + " days";
+}
+const painLv = p => p <= 3 ? 0 : p <= 6 ? 1 : 2;
+
+/* ---------------- schedule engine ---------------- */
+const isHold = date => S.holds.indexOf(date) >= 0;
+function holdsUpTo(date) { let n = 0; for (const h of S.holds) if (h <= date && h > S.cfg.start) n++; return n; }
+const p12Index = date => diffDays(S.cfg.start, date) - holdsUpTo(date);
+function p12EndDate() {
+  let d = S.cfg.start, g = 0;
+  while (p12Index(addDays(d, 1)) <= 13 && g++ < 400) d = addDays(d, 1);
+  return d;
+}
+function week3Start() {
+  if (S.cfg.week3) return S.cfg.week3;
+  if (S.cfg.tripEnd) return firstMondayAfter(S.cfg.tripEnd);
+  return firstMondayAfter(p12EndDate());
+}
+const tripSet = () => !!(S.cfg.tripStart && S.cfg.tripEnd);
+const inTrip = date => tripSet() && date >= S.cfg.tripStart && date <= S.cfg.tripEnd;
+
+function progWeek(k) {
+  let w = 3;
+  for (let i = 0; i < k; i++) {
+    if (w === "M") break;
+    const r = S.weekResults[i];
+    if (r === true) w = w === 6 ? "M" : w + 1;
+    else if (r === false && w === 6) w = 5;
+  }
+  return w;
+}
+function attemptOf(k, w) { let n = 1; for (let i = k - 1; i >= 0 && progWeek(i) === w; i--) n++; return n; }
+
+function tripVerdict() {
+  const t = S.tests.trip;
+  if (t.walk === false || t.morning === false) return { level: "stop", short: "Sightseeing", text: "Keep it to sightseeing-level walking." };
+  if (t.walk && t.morning && t.easy) return { level: "go", short: "Moderate hikes", text: "Moderate hikes are fine." };
+  if (t.walk && t.morning && t.easy === false) return { level: "hold", short: "Easier trails", text: "Stick to easier, flatter trails." };
+  return null;
+}
+
+function planFor(date) {
+  if (!planCache.has(date)) planCache.set(date, computePlan(date));
+  return planCache.get(date);
+}
+function computePlan(date) {
+  const base = { date: date, items: [], checks: [], note: "", phase: "", eyebrow: "", title: "", label: "" };
+  if (date < S.cfg.start) {
+    const inj = date === S.cfg.injury;
+    return Object.assign(base, { phase: "pre", eyebrow: inj ? fmtShort(S.cfg.injury) : "Before the plan", title: inj ? "Injury day" : "Before the plan", label: inj ? "Injury day" : "Before the plan" });
+  }
+  const w3 = week3Start();
+  if (date >= w3) {
+    const k = Math.floor(diffDays(w3, date) / 7), w = progWeek(k), d = dow(date);
+    if (w === "M") return Object.assign(base, { phase: "m", k: k, dowI: d, eyebrow: "Back to full · " + DOW3[d], label: "Back to full", title: "Keep the protective habits",
+      items: maintItems(d), note: "Nordics 1–2 times a week, the core tail, and a proper warm-up before softball." });
+    return Object.assign(base, { phase: "w" + w, wk: w, k: k, dowI: d, attempt: attemptOf(k, w), eyebrow: "Week " + w + " · " + DOW3[d], label: "Week " + w + " · " + DOW3[d],
+      title: WEEKS[w].title, items: weekItems(w, d), note: weekDayNote(w, d) });
+  }
+  if (inTrip(date)) {
+    const n = diffDays(S.cfg.tripStart, date) + 1;
+    return Object.assign(base, { phase: "trip", tripDay: n, eyebrow: "Trip · day " + n, label: "Trip day " + n, title: "Hike per the trip check", items: tripItems(n % 2 === 1, true),
+      note: "Turn around if pain climbs past 3/10. Flying? Walk the aisle every hour or so." });
+  }
+  const idx = p12Index(date);
+  if (idx <= 13) {
+    const n = idx + 1, def = PLAN_DAYS[n];
+    return Object.assign(base, { phase: "w" + def.wk, wk: def.wk, day: n, hold: isHold(date), eyebrow: "Week " + def.wk + " · Day " + n, label: "Day " + n,
+      title: WEEK_INFO[def.wk].title, items: def.items.map(x => Object.assign({}, x)), checks: def.checks || [], note: def.note || "", tripMorning: !!def.tripMorning });
+  }
+  const after = !!(S.cfg.tripEnd && date > S.cfg.tripEnd);
+  const prev = planFor(addDays(date, -1));
+  const diver = !prev.items.some(x => x.ex === "diver");
+  return Object.assign(base, { phase: "bridge", eyebrow: after ? "Back home" : "Before the trip", label: after ? "Home routine" : "Trip routine",
+    title: "Keep the routine going", items: tripItems(diver, false),
+    note: after ? "Week 3 starts " + fmtShort(w3) + ". Keep this routine until then." : (tripSet() ? "Keep this routine until you leave on " + fmtShort(S.cfg.tripStart) + "." : "Keep this routine until Week 3. Set your trip dates on the Plan tab.") });
+}
+function tripItems(diver, hikes) {
+  const items = [EXT(), it("slbridge", "3 × 10")];
+  if (diver) items.push(it("diver", "3 × 6"));
+  const v = tripVerdict();
+  if (hikes) items.push(it("trip", v ? v.text : "Walking, per the trip check", { label: "Walks and hikes" }));
+  else items.push(it("walk", "Easy pace", { label: "Easy walk" }));
+  return items;
+}
+function canHold(date) {
+  const p = planFor(date);
+  return (p.phase === "w1" || p.phase === "w2") && p.day > 1 && date > S.cfg.start && date <= todayStr();
+}
+
+/* ---------------- logs ---------------- */
+const getLog = date => S.logs[date] || null;
+function ensureLog(date) {
+  if (!S.logs[date]) S.logs[date] = { pain: null, limp: "", flags: {}, items: {}, checks: {}, notes: "" };
+  const L = S.logs[date];
+  L.flags = L.flags || {}; L.items = L.items || {}; L.checks = L.checks || {};
+  return L;
+}
+const itemState = (L, id) => (L && L.items && L.items[id]) || {};
+const hasItemData = st => !!(st && (st.done || st.am || st.pm || st.pain != null || st.note));
+function doneCount(date) {
+  const plan = planFor(date), L = getLog(date);
+  let planned = 0, done = 0;
+  for (const x of plan.items) {
+    const st = itemState(L, x.ex);
+    if (x.opt) { if (st.done) { planned++; done++; } continue; }
+    if (x.twice) { planned += 2; done += (st.am ? 1 : 0) + (st.pm ? 1 : 0); }
+    else { planned++; if (st.done) done++; }
+  }
+  return { planned: planned, done: done };
+}
+function hasActivity(L) {
+  if (!L) return false;
+  return L.pain != null || !!L.limp || !!L.notes || Object.keys(L.items || {}).some(k => hasItemData(L.items[k])) || SYMPTOMS.some(s => L.flags && L.flags[s.k]);
+}
+function prevPain(date) {
+  for (let i = 1; i <= 3; i++) {
+    const d = addDays(date, -i), L = S.logs[d];
+    if (L && L.pain != null) return { date: d, pain: L.pain, gap: i };
+  }
+  return null;
+}
+const moveName = x => x.label || (MOVES[x.ex] && MOVES[x.ex].name) || x.ex;
+
+/* ---------------- tests ---------------- */
+function curlPct() {
+  const f = S.tests.final, r = parseFloat(f.r), l = parseFloat(f.l);
+  if (!(r > 0) || !(l >= 0) || f.l === "") return null;
+  return l / r;
+}
+function finalVerdict() {
+  const f = S.tests.final, p = curlPct();
+  const parts = [f.sprint, f.kick, p == null ? null : p >= 0.9, f.range];
+  if (parts.some(v => v === false)) return { pass: false, text: "Not yet. Repeat Week 5 and retest a week later." };
+  if (parts.every(v => v === true)) return { pass: true, text: "Passed. Back to full activity, including softball." };
+  return null;
+}
+function recordableK(date) {
+  const p = planFor(date);
+  return p.phase === "w6" && S.weekResults[p.k] == null ? p.k : -1;
+}
+
+/* ---------------- guidance (the plan's rules) ---------------- */
+const RUN_EX = new Set(["jogwalk", "buildups", "strides", "cuts", "sprints", "sprinttest"]);
+const HEAVY_LOWER = new Set(["slidecurl", "pullthrough", "smithsquat", "eccurl", "nordic", "smithrdl", "bss", "lower", "curltest"]);
+function evaluate(date) {
+  const L = getLog(date) || {}, plan = planFor(date), f = L.flags || {};
+  const res = { level: "info", title: "", lines: [], actions: [], notes: [] };
+  const stops = [];
+  if (f.calf) stops.push("Calf swollen, warm or red: that can be a clot, especially after a flight. Get seen today.");
+  if (f.pop) stops.push("A new pop: get re-checked before loading the leg again.");
+  if (f.bruise) stops.push("A spreading bruise: get re-checked.");
+  if (f.weak) stops.push("Sudden weakness: get re-checked before loading the leg again.");
+  const twoWeeks = addDays(S.cfg.injury, 14);
+  if (date >= twoWeeks && (L.limp === "slight" || L.limp === "obvious"))
+    stops.push("Still limping two weeks after the injury: get re-checked. Ask for imaging, or raise it with your doctor.");
+  let nerveRun = 0;
+  for (let i = 0; i < 10; i++) { const x = S.logs[addDays(date, -i)]; if (x && x.flags && x.flags.nerve) nerveRun++; else break; }
+  if (nerveRun >= 3) stops.push("Nerve symptoms " + nerveRun + " days running. If easing off hasn't settled them, the plan says get re-checked.");
+  let holdRun = 0;
+  for (let i = 0; i < 14; i++) { if (isHold(addDays(date, -i))) holdRun++; else break; }
+  if (holdRun >= 7) stops.push("A week of repeating the same level. Progress has stalled: get re-checked (imaging, or raise it with your doctor).");
+  if (plan.attempt >= 3) stops.push("Week " + plan.wk + " for the " + ordinal(plan.attempt) + " week running. That's a stall of more than a week: get re-checked (imaging, or raise it with your doctor).");
+  if (S.tests.finalLog.filter(x => !x.pass).length >= 2 && plan.phase === "w6") stops.push("Two 100% tests missed. Worth a re-check before a third round.");
+
+  if (stops.length) { res.level = "stop"; res.title = "Get re-checked"; res.lines = stops; }
+  else if (f.nerve) {
+    res.level = "hold"; res.title = "Ease off the lengthening work";
+    res.lines = ["Rule 4: tingling, burning or shooting pain is the nerve, not the muscle, and can come from the low back. Shorten the range on the Extender, Diver and Glider today, or skip them.",
+      "If it doesn't settle after easing off, get re-checked."];
+  } else if (L.pain == null) {
+    res.level = "info"; res.title = "Start with your morning pain";
+    res.lines = ["Rate it while walking around. Each morning gets compared with the one before (Rule 2)."];
+  } else {
+    const pp = prevPain(date);
+    if (!pp) { res.level = "go"; res.title = "Baseline set"; res.lines = ["Tomorrow morning should be no worse than " + L.pain + "/10."]; }
+    else if (L.pain > pp.pain) {
+      res.level = "hold"; res.title = "Hold: this morning is worse";
+      res.lines = ["Rule 2: " + pp.pain + " → " + L.pain + "/10" + (pp.gap > 1 ? " (vs " + fmtShort(pp.date) + ")" : "") + ". Repeat the previous day's level today, for 1–2 days."];
+      if (canHold(date) && !isHold(date)) res.actions.push({ act: "hold", label: "Repeat yesterday's level", primary: true });
+      if (plan.wk >= 3) res.lines.push("Keep runs and loads at your last session's level. No progressing today.");
+    } else {
+      res.level = "go"; res.title = "Go: no worse than " + (pp.gap === 1 ? "yesterday" : fmtShort(pp.date));
+      res.lines = [pp.pain + " → " + L.pain + "/10. Do today's plan as written. Strength work stays at 3/10 or less."];
+    }
+  }
+
+  // supporting notes
+  if (isHold(date)) res.notes.push({ text: "Repeating Day " + plan.day + "'s level today.", act: "unhold", label: "Undo" });
+  const y = getLog(addDays(date, -1));
+  if (y && y.items) {
+    const hot = Object.keys(y.items).filter(k => { const s = y.items[k]; return (s.pain != null && s.pain > 3) || s.sharp; });
+    hot.slice(0, 3).forEach(k => {
+      const s = y.items[k];
+      res.notes.push({ text: "Yesterday " + (MOVES[k] ? MOVES[k].name : k) + (s.sharp ? " was sharp" : " hit " + s.pain + "/10") + ". Try it at a smaller range or easier effort today. If it happens again, keep that move at its previous level." });
+    });
+  }
+  if (plan.items.some(x => RUN_EX.has(x.ex)) && y && y.items && Object.keys(y.items).some(k => HEAVY_LOWER.has(k) && y.items[k].done))
+    res.notes.push({ text: "Yesterday had lower-body strength. Move today's run to tomorrow: runs go on fresh hamstrings." });
+  if (plan.attempt === 2) res.notes.push({ kind: "info", text: "Second time through Week " + plan.wk + ". Normal once. If this week doesn't pass either, the plan counts it as a stall." });
+  if (holdRun >= 3 && holdRun < 7) res.notes.push({ text: "Held " + holdRun + " days in a row. If it's still stuck after a week, the plan says get re-checked." });
+  const pl = painPlateau(date);
+  if (pl && res.level !== "stop") res.notes.push({ text: "Morning pain hasn't come down in a week (" + pl.now + " vs " + pl.then + " a week ago). If that continues, raise it with your doctor." });
+  if (nerveRun > 0 && nerveRun < 3 && !f.nerve) res.notes.push({ text: "Nerve symptoms logged yesterday. Keep an eye on them." });
+  if (tripSet() && date < S.cfg.tripStart && diffDays(date, S.cfg.tripStart) <= 3 && !tripVerdict())
+    res.notes.push({ text: "Trip check due: the 45–60 min brisk, hilly walk goes 2–3 days before you leave." });
+  if (!tripSet() && (plan.day >= 8 || plan.phase === "bridge"))
+    res.notes.push({ kind: "info", text: "Set your trip dates on the Plan tab so the trip check and Week 3 land on the right days.", act: "tab", tab: "plan", label: "Plan" });
+  return res;
+}
+function painPlateau(date) {
+  const avg = (a, b) => { const v = []; for (let i = a; i <= b; i++) { const L = S.logs[addDays(date, -i)]; if (L && L.pain != null) v.push(L.pain); } return v.length >= 2 ? v.reduce((x, y) => x + y, 0) / v.length : null; };
+  const now = avg(0, 2), then = avg(7, 9);
+  if (now == null || then == null) return null;
+  return now >= then && now >= 3 ? { now: now.toFixed(1), then: then.toFixed(1) } : null;
+}
+
+/* ---------------- view state ---------------- */
+const BOOT_THEME = document.documentElement.getAttribute("data-theme");
+const View = { tab: "today", date: todayStr(), filter: "all", flagsOpen: false };
+
+function applyTheme() {
+  const r = document.documentElement, t = S.cfg.theme;
+  if (t === "dark" || t === "light") r.setAttribute("data-theme", t);
+  else if (BOOT_THEME) r.setAttribute("data-theme", BOOT_THEME);
+  else r.removeAttribute("data-theme");
+}
+
+function render() {
+  const today = todayStr();
+  $("#topDate").textContent = fmtLong(today);
+  document.querySelectorAll("nav.tabs button").forEach(b => b.classList.toggle("on", b.dataset.tab === View.tab));
+  let h = banners();
+  if (!isSetUp()) { $("#view").innerHTML = h + setupView(); return; }
+  if (View.tab === "today") h += renderToday();
+  else if (View.tab === "plan") h += renderPlan();
+  else if (View.tab === "moves") h += renderMoves();
+  else h += renderProgress();
+  $("#view").innerHTML = h;
+  if (View.tab === "progress") drawPainChart();
+  const det = $("#flagsBox");
+  if (det) det.addEventListener("toggle", () => { View.flagsOpen = det.open; });
+}
+
+function banners() {
+  let h = "";
+  if (!storageOK) h += `<div class="banner"><span>Storage isn't available here, so nothing will save. Open your installed copy or the GitHub Pages link in Chrome.</span></div>`;
+  else if (BUILD === "artifact" && !S.ui.previewDismissed)
+    h += `<div class="banner"><span>Preview copy: anything logged here stays in this browser. For daily use, install the GitHub Pages copy like LiftLog. Back up and Restore (Plan tab) move your log between them.</span><button data-act="dismisspreview" aria-label="Dismiss">${IC.x}</button></div>`;
+  return h;
+}
+
+/* ---------------- SETUP (first open) ---------------- */
+const isSetUp = () => !!(S.cfg.injury && S.cfg.start);
+function setupView() {
+  return `<section class="titleblock"><div class="eyebrow">Set up</div><h1>When did it happen?</h1>
+    <p class="sub">Rehab Log runs a criteria-based plan for a left hamstring strain: two weeks to settle it down and load it, then four weeks to rebuild and run. Day 1 is the day after the injury.</p></section>
+    <section class="card stack">
+      <div class="field"><label for="setupInjury">Injury date</label><input type="date" id="setupInjury" max="${todayStr()}"></div>
+      <button class="btn primary block" data-act="setup">Start the plan</button>
+      <p class="small muted">You can change it later under Plan → Settings and data. Moving from another copy? <button class="link" data-act="import">Restore a backup</button></p>
+    </section>`;
+}
+
+/* ---------------- TODAY ---------------- */
+function ring(frac) {
+  const r = 8.5, c = 2 * Math.PI * r, v = Math.max(0, Math.min(1, frac)) * c;
+  return `<svg class="ring" viewBox="0 0 22 22" aria-hidden="true"><circle class="t" cx="11" cy="11" r="${r}" fill="none" stroke-width="3"/>` +
+    (frac > 0 ? `<circle class="v" cx="11" cy="11" r="${r}" fill="none" stroke-width="3" stroke-linecap="round" stroke-dasharray="${v.toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 11 11)"/>` : "") + `</svg>`;
+}
+function weekStrip(date) {
+  const mon = mondayOf(date), today = todayStr();
+  let h = `<div class="weekstrip" role="group" aria-label="This week">`;
+  for (let i = 0; i < 7; i++) {
+    const d = addDays(mon, i), L = getLog(d);
+    const c = d >= S.cfg.start ? doneCount(d) : { planned: 0, done: 0 };
+    const frac = c.planned ? c.done / c.planned : 0;
+    const cls = ["wsd", d === date ? "sel" : "", d === today ? "today" : "", d > today ? "future" : ""].join(" ");
+    const dis = d < S.cfg.injury ? "disabled" : "";
+    h += `<button class="${cls}" data-act="goto" data-date="${d}" ${dis} aria-label="${fmtLong(d)}"><span class="l">${DOW3[i][0]}</span><span class="n">${parseD(d).getDate()}</span>${d <= today && d >= S.cfg.start && (hasActivity(L) || c.planned) ? ring(frac) : `<svg class="ring" viewBox="0 0 22 22"></svg>`}</button>`;
+  }
+  return h + `</div>`;
+}
+function renderToday() {
+  const date = View.date, today = todayStr(), plan = planFor(date), L = getLog(date) || {};
+  const future = date > today;
+  let h = `<section class="dayhead">
+    <div class="datenav">
+      <button class="arrow" data-act="day" data-d="-1" aria-label="Previous day" ${date <= S.cfg.injury ? "disabled" : ""}>${IC.left}</button>
+      <div class="mid"><div class="d">${date === today ? "Today" : esc(fmtLong(date))}</div><div class="s">${date === today ? esc(fmtLong(date)) : relDays(date, today) + (date !== today ? ` · <button class="link" data-act="goto" data-date="${today}">Back to today</button>` : "")}</div></div>
+      <button class="arrow" data-act="day" data-d="1" aria-label="Next day">${IC.right}</button>
+    </div>
+    ${weekStrip(date)}
+  </section>`;
+  const pills = [];
+  if (plan.hold) pills.push(`<span class="pill hold">Repeat of Day ${plan.day}</span>`);
+  if (plan.attempt > 1) pills.push(`<span class="pill hold">${ordinal(plan.attempt)} time through</span>`);
+  if (future) pills.push(`<span class="pill">Preview</span>`);
+  h += `<section class="titleblock"><div class="row" style="gap:8px;flex-wrap:wrap"><span class="eyebrow">${esc(plan.eyebrow)}</span>${pills.join("")}</div>
+    <h1>${esc(plan.title)}</h1>${plan.note ? `<p class="sub">${esc(plan.note)}</p>` : ""}</section>`;
+  if (plan.phase === "pre") {
+    return h + `<div class="card empty">${date === S.cfg.injury ? "The day it happened. The plan starts tomorrow." : "Nothing here. The plan starts " + fmtShort(S.cfg.start) + "."}</div>`;
+  }
+  if (!future) h += morningCard(date, L);
+  if (!future) h += verdictHtml(evaluate(date));
+  h += gateCard(plan);
+  if (!future) h += checksHtml(plan, L);
+  if (showTripCard(date, plan)) h += tripCard();
+  if (plan.items.some(x => x.test === "final")) h += finalCard(date);
+  h += planList(date, plan, L, future);
+  if (!future) {
+    h += `<section class="card stack"><label class="q" for="dayNotes">How did it feel?</label>
+      <textarea id="dayNotes" data-input="notes" rows="3" placeholder="Anything worth telling Claude: where it pulled, what felt easy, sitting, stairs, sleep…">${esc(L.notes || "")}</textarea></section>`;
+    h += `<div class="btns"><button class="btn primary" data-act="share">${IC.share} Share check-in</button><button class="btn" data-act="copy">Copy check-in</button></div>`;
+    h += `<p class="small muted" style="text-align:center">Sends your day as text you can paste into your chat with Claude.</p>`;
+  }
+  return h;
+}
+function morningCard(date, L) {
+  const pain = L.pain, pp = prevPain(date), flags = L.flags || {};
+  let delta = "";
+  if (pain != null && pp) {
+    const d = pain - pp.pain;
+    delta = `<p class="delta">${pp.gap === 1 ? "Yesterday" : esc(fmtShort(pp.date))} <b>${pp.pain}</b> → today <b>${pain}</b> · ${d < 0 ? "better" : d > 0 ? "worse" : "same"}</p>`;
+  } else if (pp) delta = `<p class="delta">${pp.gap === 1 ? "Yesterday" : esc(fmtShort(pp.date))}: <b>${pp.pain}/10</b></p>`;
+  const nFlags = SYMPTOMS.filter(s => flags[s.k]).length;
+  const scale = Array.from({ length: 11 }, (_, n) => `<button class="${pain === n ? "on lv" + painLv(n) : ""}" data-act="pain" data-v="${n}" aria-pressed="${pain === n}" aria-label="${n} out of 10">${n}</button>`).join("");
+  return `<section class="card stack">
+    <div class="row"><div class="grow"><div class="q">Morning pain</div><div class="qhint">While walking around, 0–10</div></div>${pain != null ? `<button class="link small" data-act="clearpain">Clear</button>` : ""}</div>
+    <div><div class="scale" role="group" aria-label="Morning pain">${scale}</div><div class="scale-legend"><span>No pain</span><span>Worst imaginable</span></div></div>
+    ${delta}
+    <div class="q">Limp</div>
+    <div class="seg" role="group" aria-label="Limp">${[["none", "None"], ["slight", "Slight"], ["obvious", "Obvious"]].map(p => `<button class="${L.limp === p[0] ? "on" : ""}" data-act="limp" data-v="${p[0]}" aria-pressed="${L.limp === p[0]}">${p[1]}</button>`).join("")}</div>
+    <details class="more" id="flagsBox" ${nFlags || View.flagsOpen ? "open" : ""}>
+      <summary>Anything new today? <span class="muted small">${nFlags ? nFlags + " flagged" : "Nothing flagged"}</span><span class="chev">${IC.right}</span></summary>
+      <div class="chips">${SYMPTOMS.map(s => `<button class="chip ${flags[s.k] ? "on" + (s.level === "hold" ? " hold" : "") : ""}" data-act="flag" data-v="${s.k}" aria-pressed="${!!flags[s.k]}">${esc(s.label)}</button>`).join("")}</div>
+    </details>
+  </section>`;
+}
+function verdictHtml(ev) {
+  const icon = { go: IC.go, hold: IC.pause, stop: IC.alert, info: IC.info }[ev.level];
+  let h = `<section class="verdict ${ev.level}" aria-live="polite"><div class="ic">${icon}</div><h3>${esc(ev.title)}</h3><div class="body">${ev.lines.map(l => `<p>${esc(l)}</p>`).join("")}</div>`;
+  if (ev.actions.length) h += `<div class="acts">${ev.actions.map(a => `<button class="btn sm ${a.primary ? "primary" : ""}" data-act="${a.act}">${esc(a.label)}</button>`).join("")}</div>`;
+  h += `</section>`;
+  if (ev.notes.length) h += `<section class="notes">${ev.notes.map(n => `<div class="note ${n.kind || ""}"><span class="dot"></span><div class="grow">${esc(n.text)}</div>${n.act ? `<button class="btn sm ghost" data-act="${n.act}" ${n.tab ? `data-tab="${n.tab}"` : ""}>${esc(n.label)}</button>` : ""}</div>`).join("")}</section>`;
+  return h;
+}
+const yn = (act, id, v) => `<button class="yes ${v === true ? "on" : ""}" data-act="${act}" data-id="${id}" data-v="1" aria-pressed="${v === true}">Yes</button><button class="no ${v === false ? "on" : ""}" data-act="${act}" data-id="${id}" data-v="0" aria-pressed="${v === false}">Not yet</button>`;
+function checksHtml(plan, L) {
+  return (plan.checks || []).map(c => {
+    const v = (L.checks || {})[c.id];
+    return `<section class="card"><div class="eyebrow">Checkpoint</div>
+      <div class="crit" style="padding-bottom:0"><div class="t">${esc(c.q)}</div><div class="yn">${yn("check", c.id, v)}</div></div>
+      ${v === false ? `<div class="outcome hold">${esc(c.no)}</div>` : v === true ? `<div class="outcome go">${IC.go.replace("<svg", '<svg width="18" height="18"')} Checkpoint passed.</div>` : ""}</section>`;
+  }).join("");
+}
+function showTripCard(date, plan) {
+  if (plan.items.some(x => x.test === "trip") || plan.tripMorning) return true;
+  const wd = S.tests.trip.walkDate;
+  if (wd && (date === wd || date === addDays(wd, 1))) return true;
+  if (tripSet() && date < S.cfg.tripStart && diffDays(date, S.cfg.tripStart) <= 3) return true;
+  return false;
+}
+function tripMorningHint() {
+  const wd = S.tests.trip.walkDate;
+  if (!wd) return "";
+  const a = S.logs[wd], b = S.logs[addDays(wd, 1)];
+  if (!a || a.pain == null || !b || b.pain == null) return "Compare the morning of " + fmtShort(addDays(wd, 1)) + " with the morning of the walk (" + fmtShort(wd) + ").";
+  return "Morning of the walk " + a.pain + "/10 → next morning " + b.pain + "/10: " + (b.pain <= a.pain ? "no worse." : "worse.");
+}
+function tripCard() {
+  const t = S.tests.trip, v = tripVerdict(), hint = tripMorningHint();
+  let h = `<section class="card"><div class="row"><h3 class="grow">Trip check</h3>${v ? `<span class="pill ${v.level === "go" ? "accent" : v.level}">${esc(v.short)}</span>` : ""}</div>
+    <p class="small muted" style="margin:4px 0 4px">Day 11, or 2–3 days before you leave if that's sooner.</p>`;
+  TRIP_CHECK.forEach((c, i) => {
+    h += `<div class="crit"><div class="t">${i + 1}. ${esc(c.text)}${c.k === "morning" && hint ? `<small>${esc(hint)}</small>` : ""}</div><div class="yn">${yn("trip", c.k, t[c.k])}</div></div>`;
+  });
+  h += v ? `<div class="outcome ${v.level}">${esc(v.text)}</div>`
+    : `<div class="outcome info">All three: moderate hikes. 1 and 2: easier, flatter trails. Otherwise: sightseeing-level walking.</div>`;
+  return h + `</section>`;
+}
+function finalCard(date) {
+  const f = S.tests.final, v = finalVerdict(), pct = curlPct();
+  let h = `<section class="card" id="testCard"><div class="row"><h3 class="grow">The 100% test</h3>${v ? `<span class="pill ${v.pass ? "accent" : "stop"}">${v.pass ? "Passed" : "Not yet"}</span>` : ""}</div>
+    <p class="small muted" style="margin:4px 0 4px">Pass all four and you're back to full activity, including softball. Sprint, kick and range on Thursday; the curl check opens Friday's session.</p>`;
+  for (const c of FINAL_TEST) {
+    if (c.k === "curl") {
+      h += `<div class="crit" style="grid-template-columns:1fr"><div class="t"><b>${esc(c.name)}.</b> ${esc(c.text)}</div>
+        <div class="curlrow"><label>Weight (lb)<input type="number" inputmode="decimal" id="finalW" data-change="final" data-k="w" value="${esc(f.w)}"></label>
+        <label>Right reps<input type="number" inputmode="numeric" id="finalR" data-change="final" data-k="r" value="${esc(f.r)}"></label>
+        <label>Left reps<input type="number" inputmode="numeric" id="finalL" data-change="final" data-k="l" value="${esc(f.l)}"></label></div>
+        ${pct != null ? `<div class="small" style="margin-top:6px">Left is <b>${Math.round(pct * 100)}%</b> of right: ${pct >= 0.9 ? "pass" : "not yet (needs 90%)"}</div>` : ""}</div>`;
+    } else h += `<div class="crit"><div class="t"><b>${esc(c.name)}.</b> ${esc(c.text)}</div><div class="yn">${yn("final", c.k, f[c.k])}</div></div>`;
+  }
+  if (v) {
+    h += `<div class="outcome ${v.pass ? "go" : "stop"}">${esc(v.text)}</div>`;
+    if (recordableK(date) >= 0) h += `<button class="btn block ${v.pass ? "primary" : ""}" style="margin-top:10px" data-act="recordfinal" data-date="${date}">${v.pass ? "Record the pass and switch to maintenance" : "Record it: repeat Week 5, retest in a week"}</button>`;
+  }
+  return h + `</section>`;
+}
+function gateCard(plan) {
+  if (!/^w[3-6]$/.test(plan.phase) || plan.date > todayStr()) return "";
+  const k = plan.k, d = plan.dowI;
+  if (d === 0 && k >= 1 && S.weekResults[k - 1] == null) return gateHtml(k - 1, progWeek(k - 1), true);
+  if ((d === 5 || d === 6) && S.weekResults[k] == null) return gateHtml(k, plan.wk, false);
+  return "";
+}
+function gateHtml(k, w, late) {
+  if (w === 6) {
+    return `<section class="card"><div class="eyebrow">${late ? "Last week" : "End of the week"} · Week 6</div><h3 style="margin:4px 0 6px">The 100% test decides what's next</h3>
+      <p class="small muted">Record the result on the test card. Didn't get to test? Run Week 6 again.</p>
+      <div class="btns" style="margin-top:10px"><button class="btn sm primary" data-act="tab" data-tab="plan" data-anchor="testCard">Open the test</button><button class="btn sm" data-act="gate" data-k="${k}" data-v="repeat">Repeat Week 6</button></div></section>`;
+  }
+  return `<section class="card"><div class="eyebrow">${late ? "Last week" : "End of the week"} · Week ${w}</div><h3 style="margin:4px 0 6px">Move-on check</h3>
+    <p class="small">${esc(WEEKS[w].moveOn)}</p>
+    <div class="btns" style="margin-top:10px"><button class="btn sm primary" data-act="gate" data-k="${k}" data-v="1">Passed: ${late ? "switch to" : "next up,"} Week ${w + 1}</button><button class="btn sm" data-act="gate" data-k="${k}" data-v="0">Not yet: repeat Week ${w}</button></div></section>`;
+}
+function planList(date, plan, L, future) {
+  const c = doneCount(date);
+  let h = `<section class="card"><div class="row" style="margin-bottom:4px"><h3 class="grow">${future ? "Planned" : date === todayStr() ? "Today's plan" : "The plan that day"}</h3>${plan.items.length ? `<span class="count">${c.done}/${c.planned} done</span>` : ""}</div><div class="list">`;
+  if (!plan.items.length) h += `<div class="empty" style="padding:12px">Nothing scheduled. Regular training day.</div>`;
+  let last = null, started = false;
+  for (const x of plan.items) {
+    const g = x.group || null;
+    if (g !== last) { if (g) h += `<div class="grp">${esc(g)}</div>`; else if (started) h += `<div class="grp">Also today</div>`; last = g; }
+    started = true;
+    h += itemRow(x, itemState(L, x.ex), future);
+  }
+  const ids = new Set(plan.items.map(x => x.ex));
+  const extra = Object.keys(L.items || {}).filter(k => !ids.has(k) && MOVES[k] && hasItemData(L.items[k]));
+  if (extra.length) {
+    h += `<div class="grp">Also done</div>`;
+    extra.forEach(k => { h += itemRow({ ex: k, dose: "Added", extra: true }, L.items[k], future); });
+  }
+  h += `</div>`;
+  if (!future) {
+    const holdBtn = isHold(date) ? `<button class="btn sm ghost" data-act="unhold">Undo repeat</button>` : canHold(date) ? `<button class="btn sm ghost" data-act="hold">Repeat yesterday's level</button>` : "";
+    h += `<div class="addrow"><button class="btn sm ghost" data-act="addextra">+ Add something else</button>${holdBtn}</div>`;
+  }
+  return h + `</section>`;
+}
+function itemRow(x, st, ro) {
+  const name = moveName(x), dis = ro ? "disabled" : "";
+  const done = x.twice ? st.am && st.pm : st.done;
+  const checks = x.twice
+    ? `<button class="chk sm ${st.am ? "on" : ""}" data-act="tick" data-id="${x.ex}" data-slot="am" ${dis} aria-pressed="${!!st.am}" aria-label="${esc(name)} morning">AM</button><button class="chk sm ${st.pm ? "on" : ""}" data-act="tick" data-id="${x.ex}" data-slot="pm" ${dis} aria-pressed="${!!st.pm}" aria-label="${esc(name)} evening">PM</button>`
+    : `<button class="chk ${st.done ? "on" : ""}" data-act="tick" data-id="${x.ex}" ${dis} aria-pressed="${!!st.done}" aria-label="Mark ${esc(name)} done">${IC.check}</button>`;
+  const pain = ro ? "<span></span>" : st.pain != null
+    ? `<button class="pchip lv${painLv(st.pain)}" data-act="itemsheet" data-id="${x.ex}" aria-label="Pain during ${esc(name)}: ${st.pain} of 10">${st.pain}/10</button>`
+    : `<button class="pchip" data-act="itemsheet" data-id="${x.ex}" aria-label="Rate pain during ${esc(name)}">Pain</button>`;
+  const warn = (st.pain != null && st.pain > 3) || st.sharp ? `<div class="iwarn">${st.sharp ? "Sharp pain or a pull" : "Above 3/10"}: stop this one for today (Rule 1).</div>` : "";
+  return `<div class="item ${done ? "done" : ""}">
+    <div class="checks">${checks}</div>
+    <button class="iname" data-act="move" data-id="${x.ex}" data-dose="${esc(x.extra ? "" : x.dose)}">
+      <span class="nm">${esc(name)}${x.opt ? ` <span class="opt">Optional</span>` : ""}<span class="how">${IC.how}</span></span>
+      <span class="dose">${esc(x.dose)}</span>${st.note ? `<span class="inote">${esc(st.note)}</span>` : ""}
+    </button>${pain}${warn}</div>`;
+}
+
+/* ---------------- PLAN ---------------- */
+function p12Map() {
+  const map = {}, end = p12EndDate(), w3 = week3Start();
+  for (let d = S.cfg.start; d <= end && d < w3; d = addDays(d, 1)) {
+    const p = planFor(d);
+    if (p.day) (map[p.day] = map[p.day] || []).push(d);
+  }
+  return map;
+}
+function renderPlan() {
+  const today = todayStr(), tp = planFor(today), map = p12Map(), w3 = week3Start();
+  const wk = n => { const a = (map[n === 1 ? 1 : 8] || [])[0], b = (map[n === 1 ? 7 : 14] || []).slice(-1)[0]; return a && b ? fmtShort(a) + " – " + fmtShort(b) : "Replaced by the trip"; };
+  const cur = tp.phase === "w1" ? "w1" : tp.phase === "w2" ? "w2" : tp.phase === "trip" || tp.phase === "bridge" ? "tr" : tp.phase === "w6" && tp.dowI >= 3 ? "te" : /^w[3-6]$/.test(tp.phase) ? "w3" : tp.phase === "m" ? "te" : "w1";
+  const sinceInj = diffDays(S.cfg.injury, today);
+  let h = `<section class="titleblock"><div class="eyebrow">Left hamstring rehab</div><h1>The plan</h1>
+    <p class="sub">Checks, not dates. Dates are targets; move ahead only when you pass each check.</p></section>`;
+  h += `<section class="card summary">
+    <div><div class="eyebrow">Today</div><div class="big">${esc(tp.eyebrow)} · ${esc(tp.title)}</div></div>
+    <div class="facts">
+      <div class="fact"><div class="k">Since the injury</div><div class="v">${sinceInj} day${sinceInj === 1 ? "" : "s"}</div></div>
+      <div class="fact"><div class="k">Target: full speed</div><div class="v">${fmtMon(addDays(S.cfg.injury, 35))} – ${fmtMon(addDays(S.cfg.injury, 42))}</div></div>
+      <div class="fact"><div class="k">Still normal until</div><div class="v">${fmtMon(addDays(S.cfg.injury, 56))} (8 wks)</div></div>
+      <div class="fact"><div class="k">Next check</div><div class="v">${esc(nextCheck(today))}</div></div>
+    </div>
+    <div class="timeline" role="list">
+      <div role="listitem" class="tl w1 ${cur === "w1" ? "on" : ""}">Week 1<small>${esc(wk(1))}</small></div>
+      <div role="listitem" class="tl w2 ${cur === "w2" ? "on" : ""}">Week 2<small>${esc(wk(2))}</small></div>
+      <div role="listitem" class="tl tr ${cur === "tr" ? "on" : ""}">Trip<small>${tripSet() ? fmtMD(S.cfg.tripStart) + "–" + fmtMD(S.cfg.tripEnd) : "Set dates"}</small></div>
+      <div role="listitem" class="tl w3 ${cur === "w3" ? "on" : ""}">Weeks 3–6<small>From ${fmtShort(w3)}</small></div>
+      <div role="listitem" class="tl te ${cur === "te" ? "on" : ""}">Test<small>End of wk 6</small></div>
+    </div></section>`;
+  [1, 2].forEach(n => {
+    const info = WEEK_INFO[n];
+    h += `<div class="sechead"><h2>Week ${n} · ${esc(info.title)}</h2><span class="muted">${esc(wk(n))}</span></div>`;
+    h += `<section class="card stack"><p class="small">${esc(info.intro)}</p><div class="tip">${esc(info.tip)}</div><div>`;
+    for (let d = n === 1 ? 1 : 8; d <= (n === 1 ? 7 : 14); d++) h += dayRow(d, map[d] || [], today);
+    h += `</div></section>`;
+  });
+  h += `<div class="sechead"><h2>Trip</h2><span class="muted">${tripSet() ? esc(fmtShort(S.cfg.tripStart) + " – " + fmtShort(S.cfg.tripEnd)) : "Dates not set"}</span></div>`;
+  h += `<section class="card stack"><div class="two">
+      <div class="field"><label for="cfgTripStart">Leave</label><input type="date" id="cfgTripStart" data-change="cfg" data-k="tripStart" value="${esc(S.cfg.tripStart)}"></div>
+      <div class="field"><label for="cfgTripEnd">Back home</label><input type="date" id="cfgTripEnd" data-change="cfg" data-k="tripEnd" value="${esc(S.cfg.tripEnd)}"></div></div>
+      <p class="small muted">${tripSet() ? "Week 3 starts on the first Monday after you're back: " + fmtShort(w3) + "." : "Add your dates so the trip check, the travel routine and Week 3 land on the right days."}</p></section>`;
+  h += tripCard();
+  h += `<section class="card stack"><h3>On the trip</h3><ul class="ulist">${TRIP_RULES.map(r => `<li>${esc(r)}</li>`).join("")}</ul>
+    <div class="tip"><b>Daily routine:</b> Extender 3 × 12 morning and evening, single-leg bridges 3 × 10, Diver 3 × 6 every other day. Keep it going at home until Week 3 starts.</div></section>`;
+  h += weeks36(today, tp, w3);
+  h += `<div class="sechead"><h2>The 100% test</h2><span class="muted">End of Week 6</span></div>` + finalCard(today);
+  h += `<section class="card stack tealcard"><h3>After you're back</h3><ul class="ulist">${AFTER_BACK.map(a => `<li><b>${esc(a[0])}</b> ${esc(a[1])}</li>`).join("")}</ul></section>`;
+  h += `<div class="sechead"><h2>Rules for every day</h2></div><section class="card"><ol class="olist">${RULES.map(r => `<li>${esc(r)}</li>`).join("")}</ol></section>`;
+  h += `<section class="card stack redcard"><h3>Get re-checked if</h3><ul class="ulist">${RECHECK.map(r => `<li>${esc(r)}</li>`).join("")}</ul>
+    <p class="small muted">A self-guided plan. If a doctor or physical therapist tells you something different, follow them.</p></section>`;
+  h += settingsCard();
+  h += `<section class="card ev"><div class="eyebrow">Evidence behind the plan</div>${EVIDENCE.map(e => `<p><b>${esc(e[0])}.</b> ${esc(e[1])}${e[2] ? ` <a href="${e[2]}" target="_blank" rel="noopener">PubMed ↗</a>` : ""}</p>`).join("")}</section>`;
+  return h;
+}
+function nextCheck(today) {
+  for (let i = 0; i <= 40; i++) {
+    const d = addDays(today, i), p = planFor(d);
+    if (p.checks && p.checks.length) return (p.label === "Day " + p.day ? "Day " + p.day + ", " : "") + fmtShort(d);
+    if (p.items.some(x => x.test === "trip")) return "Trip check, " + fmtShort(d);
+    if (/^w[3-5]$/.test(p.phase) && p.dowI === 6) return "Week " + p.wk + " move-on, " + fmtShort(d);
+    if (p.items.some(x => x.test === "final")) return "100% test, " + fmtShort(d);
+  }
+  return "—";
+}
+function dayRow(n, dates, today) {
+  const def = PLAN_DAYS[n];
+  const names = def.items.map(x => (x.twice ? moveName(x) + " ×2" : moveName(x))).join(" · ");
+  if (!dates.length) return `<div class="dayrow"><div class="dn"><small>Day</small>${n}</div><div class="what"><span class="dt muted">Replaced by the trip</span><span class="ex">${esc(names)}</span></div><div></div></div>`;
+  const first = dates[0], lastD = dates[dates.length - 1];
+  const isCur = dates.indexOf(today) >= 0;
+  const L = getLog(lastD), c = doneCount(lastD);
+  let st = "";
+  if (lastD <= today) {
+    if (L && L.pain != null) st += `<span class="pchip lv${painLv(L.pain)}">${L.pain}/10</span>`;
+    st += `<span class="count">${c.done}/${c.planned}</span>`;
+  } else st = `<span class="muted small">Planned</span>`;
+  const dl = dates.length > 1 ? fmtShort(first) + " + " + (dates.length - 1) + " repeat" + (dates.length > 2 ? "s" : "") : fmtShort(first);
+  return `<button class="dayrow ${isCur ? "cur" : ""}" data-act="goto" data-date="${isCur ? today : lastD}"><div class="dn"><small>Day</small>${n}</div>
+    <div class="what"><span class="dt">${esc(dl)}${def.checks ? ` <span class="pill hold" style="margin-left:4px">Checkpoint</span>` : ""}${def.items.some(x => x.test) ? ` <span class="pill hold" style="margin-left:4px">Trip check</span>` : ""}</span><span class="ex">${esc(names)}</span></div>
+    <div class="st">${st}</div></button>`;
+}
+function weeks36(today, tp, w3) {
+  let h = `<div class="sechead"><h2>Weeks 3–6 · Rebuild and run</h2><span class="muted">From ${esc(fmtShort(w3))}</span></div>`;
+  h += `<section class="card stack"><div class="layout7">${WEEKLY_LAYOUT.map((c, i) => `<div class="${i === 0 || i === 3 ? "run" : i === 1 || i === 4 ? "str" : ""}"><b>${c[0]}</b>${esc(c[1])}</div>`).join("")}</div>
+    <p class="small">Runs never land the day after lower-body strength, so your hamstrings are fresh when you run fast. Tired hamstrings strain more easily.</p>
+    <p class="small muted">Keep the L-protocol going until you pass the 100% test: Extender every morning and evening, Diver about every other day (Mon, Wed, Fri, Sun), Glider about every third day (Tue, Fri).</p></section>`;
+  if (/^w[3-6]$/.test(tp.phase)) {
+    const w = tp.wk, r = S.weekResults[tp.k];
+    h += `<section class="card stack"><div class="row"><div class="grow"><div class="eyebrow">This week</div><h3>Week ${w} · ${esc(WEEKS[w].title)}</h3></div>${tp.attempt > 1 ? `<span class="pill hold">${ordinal(tp.attempt)} time</span>` : ""}</div>
+      <dl class="kv"><dt>Runs</dt><dd>${esc(WEEKS[w].runs)}</dd><dt>Strength</dt><dd>${esc(WEEKS[w].strength)}</dd><dt>Move on when</dt><dd>${esc(WEEKS[w].moveOn)}</dd></dl>`;
+    if (w < 6) {
+      if (r == null) h += `<div class="btns"><button class="btn sm primary" data-act="gate" data-k="${tp.k}" data-v="1">Passed: Week ${w + 1} next Monday</button><button class="btn sm" data-act="gate" data-k="${tp.k}" data-v="0">Not yet: repeat Week ${w}</button></div>`;
+      else h += `<div class="outcome ${r === true ? "go" : "hold"}">${r === true ? "Passed. Week " + (w + 1) + " starts Monday." : "Repeating Week " + w + " next week."} <button class="link" style="margin-left:auto" data-act="ungate" data-k="${tp.k}">Change</button></div>`;
+    }
+    h += `</section>`;
+  }
+  const kNow = today >= w3 ? Math.floor(diffDays(w3, today) / 7) : -1;
+  if (kNow >= 1) {
+    h += `<section class="card stack"><h3>Your weeks so far</h3><div class="weekhist">`;
+    for (let k = 0; k < kNow; k++) {
+      const w = progWeek(k), r = S.weekResults[k];
+      h += `<div><span>${esc(fmtShort(addDays(w3, 7 * k)))} · ${w === "M" ? "Back to full" : "Week " + w}</span><span class="muted">${r === true ? "passed" : r === false ? (w === 6 ? "test missed" : "repeated") : "repeated"}</span></div>`;
+    }
+    h += `</div></section>`;
+  }
+  h += `<section class="card">`;
+  [3, 4, 5, 6].forEach(w => {
+    h += `<details class="wk" ${tp.wk === w ? "open" : ""}><summary>Week ${w} · ${esc(WEEKS[w].title)}<span class="chev">${IC.right}</span></summary>
+      <dl class="kv" style="margin:8px 0 6px"><dt>Runs</dt><dd>${esc(WEEKS[w].runs)}</dd><dt>Strength</dt><dd>${esc(WEEKS[w].strength)}</dd><dt>Move on when</dt><dd>${esc(WEEKS[w].moveOn)}</dd></dl></details>`;
+  });
+  return h + `</section>`;
+}
+function settingsCard() {
+  const t = S.cfg.theme;
+  return `<div class="sechead"><h2>Settings and data</h2></div><section class="card stack">
+    <div class="field"><span class="flabel">Theme</span><div class="seg">${[["auto", "Auto"], ["dark", "Dark"], ["light", "Light"]].map(p => `<button class="${t === p[0] ? "on" : ""}" data-act="theme" data-v="${p[0]}">${p[1]}</button>`).join("")}</div></div>
+    <div class="two">
+      <div class="field"><label for="cfgWeek3">Week 3 starts</label><input type="date" id="cfgWeek3" data-change="cfg" data-k="week3" value="${esc(S.cfg.week3 || week3Start())}"></div>
+      <div class="field"><span class="flabel">&nbsp;</span>${S.cfg.week3 ? `<button class="btn sm" data-act="week3auto">Back to automatic</button>` : `<p class="small muted" style="align-self:center">Automatic: first Monday after the trip.</p>`}</div>
+    </div>
+    <div class="two">
+      <div class="field"><label for="cfgInjury">Injury date</label><input type="date" id="cfgInjury" data-change="cfg" data-k="injury" value="${esc(S.cfg.injury)}"></div>
+      <div class="field"><label for="cfgStart">Plan Day 1</label><input type="date" id="cfgStart" data-change="cfg" data-k="start" value="${esc(S.cfg.start)}"></div>
+    </div>
+    <div class="btns"><button class="btn" data-act="export">Back up</button><button class="btn" data-act="import">Restore a backup</button></div>
+    <p class="small muted">${S.ui.lastBackup ? "Last backup: " + esc(fmtShort(S.ui.lastBackup)) + "." : "No backup yet."} Your log lives on this device only.</p>
+    <button class="btn danger block" data-act="reset">Erase everything</button></section>`;
+}
+
+/* ---------------- MOVES ---------------- */
+function renderMoves() {
+  const f = View.filter, tp = planFor(todayStr());
+  const todaySet = new Set();
+  tp.items.forEach(x => { todaySet.add(x.ex); (MOVES[x.ex] && MOVES[x.ex].composite || []).forEach(k => todaySet.add(k)); });
+  let h = `<section class="titleblock"><div class="eyebrow">Tap a move for the full breakdown</div><h1>Moves</h1>
+    <p class="sub">Setup, steps, what you should feel, when to back off, and the tweaks for your back, wrist, shoulder and knee.</p></section>`;
+  h += `<div class="filters" role="group" aria-label="Filter moves">${[["all", "All"], ["today", "Today"]].concat(MOVE_CATS.map(c => [c.k, c.name])).map(p => `<button class="${f === p[0] ? "on" : ""}" data-act="mfilter" data-v="${p[0]}">${esc(p[1])}</button>`).join("")}</div>`;
+  const cats = f === "all" || f === "today" ? MOVE_CATS : MOVE_CATS.filter(c => c.k === f);
+  let any = false;
+  for (const c of cats) {
+    let keys = Object.keys(MOVES).filter(k => MOVES[k].cat === c.k);
+    if (f === "today") keys = keys.filter(k => todaySet.has(k));
+    if (!keys.length) continue;
+    any = true;
+    h += `<section><div class="sechead"><h2>${esc(c.name)}</h2></div>${c.sub ? `<p class="catsub">${esc(c.sub)}</p>` : ""}<div class="card" style="padding-block:6px">${keys.map(k => moveRow(k, todaySet.has(k))).join("")}</div></section>`;
+  }
+  if (!any) h += `<div class="card empty">Nothing scheduled today.</div>`;
+  return h;
+}
+function figFor(k) { const m = MOVES[k]; return m.fig || (m.composite ? MOVES[m.composite[0]].fig : null); }
+function moveRow(k, isToday) {
+  const m = MOVES[k], fig = figFor(k);
+  return `<button class="mrow" data-act="move" data-id="${k}"><span class="thumb">${fig ? Fig.render(fig, m.name) : `<span class="ph">${esc(m.name.charAt(0))}</span>`}</span>
+    <span class="grow"><span class="nm">${esc(m.name)}${isToday ? ` <span class="pill accent">Today</span>` : ""}</span><span class="wh">${esc(m.when)}</span></span><span class="go">${IC.right}</span></button>`;
+}
+const STEP_TITLES = { everyday: "Workarounds", trip: "What to do", upper: "Tweaks", lower: "How they come back", tripcheck: "The three checks", walk: "How to walk it", softball: "What to do", warmup: "The routine" };
+function moveSheet(k, ctx) {
+  const m = MOVES[k]; if (!m) return;
+  ctx = ctx || {};
+  const cat = MOVE_CATS.find(c => c.k === m.cat);
+  const ul = a => `<ul>${a.map(x => `<li>${esc(x)}</li>`).join("")}</ul>`;
+  const sec = (t, b) => `<div class="hsec"><h4>${t}</h4>${b}</div>`;
+  let h = `<div class="grab"></div><div class="shead">${ctx.back ? `<button class="x" style="margin-left:0" data-act="move" data-id="${ctx.back}" aria-label="Back">${IC.left}</button>` : ""}<div class="grow"><div class="eyebrow">${esc(cat ? cat.name : "")}</div><h2>${esc(m.name)}</h2></div><button class="x" data-act="close" aria-label="Close">${IC.x}</button></div><div class="sbody">`;
+  if (ctx.dose) h += `<div class="dosebox"><b>${ctx.date === todayStr() ? "Today" : esc(fmtShort(ctx.date))}:</b> ${esc(ctx.dose)}</div>`;
+  h += `<p class="small muted">${esc(m.when)}</p>`;
+  if (m.fig) h += `<div class="figbox">${Fig.render(m.fig, m.name + " diagram")}${m.fig.custom ? "" : `<div class="cap"><span><i></i>Left leg</span>${m.fig.a && m.fig.b ? `<span><i class="gh"></i>Start position</span>` : ""}</div>`}</div>`;
+  if (m.why) h += sec("Why it's in the plan", `<p>${esc(m.why)}</p>`);
+  if (m.composite) {
+    h += sec("The three moves", `<div class="compos">${m.composite.map(p => `<button class="mrow" data-act="move" data-id="${p}" data-back="${k}"><span class="thumb">${Fig.render(MOVES[p].fig, MOVES[p].name)}</span><span class="grow"><span class="nm">${esc(MOVES[p].name)}</span><span class="wh">${esc(m.doses[p])}</span></span><span class="go">${IC.right}</span></button>`).join("")}</div>`);
+    if (m.doseNote) h += `<p class="small muted">${esc(m.doseNote)}</p>`;
+  }
+  if (m.setup && m.setup.length) h += sec("Setup", ul(m.setup));
+  if (m.steps && m.steps.length) h += sec(STEP_TITLES[k] || "How to do it", `<ol>${m.steps.map(x => `<li>${esc(x)}</li>`).join("")}</ol>`);
+  if (m.result) h += sec("What the result means", `<div class="verdtable">${m.result.map(r => `<div><b>${esc(r[0])}</b><span>${esc(r[1])}</span></div>`).join("")}</div>`);
+  if (m.feel) h += sec("What you should feel", `<p>${esc(m.feel)}</p>`);
+  if (m.stop && m.stop.length) h += sec("Stop or ease off if", ul(m.stop));
+  if (m.mistakes && m.mistakes.length) h += sec("Common mistakes", ul(m.mistakes));
+  if (m.easier || m.harder) h += `<div class="ez">${m.easier ? `<div><b>Easier</b>${esc(m.easier)}</div>` : ""}${m.harder ? `<div><b>Harder</b>${esc(m.harder)}</div>` : ""}</div>`;
+  if (m.mods && m.mods.length) h += `<div class="mods hsec"><h4>For you</h4>${ul(m.mods)}</div>`;
+  h += moveHistory(k);
+  if (m.video) h += `<a class="btn block ghost" href="https://www.youtube.com/results?search_query=${encodeURIComponent(m.video)}" target="_blank" rel="noopener">Watch demos on YouTube ↗</a>`;
+  h += `</div>`;
+  Modal.open(h);
+}
+function moveHistory(k) {
+  const dates = Object.keys(S.logs).filter(d => hasItemData(S.logs[d].items && S.logs[d].items[k])).sort();
+  if (!dates.length) return "";
+  const last = dates[dates.length - 1], st = S.logs[last].items[k];
+  const rated = dates.filter(d => S.logs[d].items[k].pain != null).slice(-8);
+  return `<div class="hsec"><h4>Your log</h4><p class="small">Logged ${dates.length} time${dates.length === 1 ? "" : "s"}. Last: ${esc(fmtShort(last))}${st.pain != null ? ", pain " + st.pain + "/10" : ""}.</p>
+    ${rated.length ? `<div class="dots" style="justify-content:flex-start;margin-top:6px">${rated.map(d => `<span class="lv${painLv(S.logs[d].items[k].pain)}" title="${esc(fmtShort(d))}">${S.logs[d].items[k].pain}</span>`).join("")}</div>` : ""}</div>`;
+}
+
+/* ---------------- PROGRESS ---------------- */
+function loggedDates() { return Object.keys(S.logs).filter(d => hasActivity(S.logs[d])).sort(); }
+function extenderStreak() {
+  const today = todayStr();
+  let d = today, n = 0;
+  const full = x => { const L = getLog(x); return L && L.items && L.items.extender && L.items.extender.am && L.items.extender.pm; };
+  if (!full(d)) d = addDays(d, -1);
+  while (d >= S.cfg.start && full(d)) { n++; d = addDays(d, -1); }
+  return n;
+}
+function groupKey(p) {
+  if (p.phase === "w1") return { k: "w1", label: "Week 1" };
+  if (p.phase === "w2") return { k: "w2", label: "Week 2" };
+  if (p.phase === "trip") return { k: "trip", label: "Trip" };
+  if (p.phase === "bridge") return { k: "br" + (S.cfg.tripEnd && p.date > S.cfg.tripEnd ? "b" : "a"), label: "Routine" };
+  if (p.phase === "m") return { k: "m" + p.k, label: "Back · " + fmtMD(addDays(week3Start(), 7 * p.k)) };
+  return { k: "k" + p.k, label: "Week " + p.wk + (p.attempt > 1 ? " (" + ordinal(p.attempt) + ")" : "") };
+}
+function renderProgress() {
+  const today = todayStr(), dates = loggedDates();
+  let h = `<section class="titleblock"><div class="eyebrow">Since ${esc(fmtShort(S.cfg.injury))}</div><h1>Progress</h1></section>`;
+  if (!dates.length) return h + `<div class="card empty">Nothing logged yet. Rate your morning pain on the Today tab and the chart starts here.</div>`;
+  const pd = dates.filter(d => S.logs[d].pain != null);
+  if (pd.length) {
+    const last = pd[pd.length - 1], lp = S.logs[last].pain, prev = pd.length > 1 ? S.logs[pd[pd.length - 2]].pain : null;
+    const d = prev == null ? null : lp - prev;
+    h += `<section class="card"><div class="eyebrow">Morning pain</div><div class="hero"><div class="num">${lp}<small>/10</small></div>
+      <div>${d == null ? "" : `<div class="dl ${d < 0 ? "down" : d > 0 ? "up" : "flat"}">${d < 0 ? "▼ " + (-d) + " better" : d > 0 ? "▲ " + d + " worse" : "No change"} than ${esc(fmtShort(pd[pd.length - 2]))}</div>`}<div class="small muted">${esc(fmtShort(last))}${last === today ? " · today" : ""}</div></div></div>
+      <div class="chart" id="painChart"></div>
+      <div class="legend"><span><i style="background:var(--accent)"></i>No limp</span><span><i style="background:var(--hold)"></i>Slight limp</span><span><i style="background:var(--stop)"></i>Obvious limp</span></div></section>`;
+  }
+  const last7 = []; for (let i = 0; i < 7; i++) { const L = getLog(addDays(today, -i)); if (L && L.pain != null) last7.push(L.pain); }
+  const avg = last7.length ? (last7.reduce((a, b) => a + b, 0) / last7.length).toFixed(1) : "—";
+  h += `<div class="stats"><div class="stat"><div class="k">7-day average</div><div class="v">${avg}${last7.length ? "<small>/10</small>" : ""}</div></div>
+    <div class="stat"><div class="k">Days logged</div><div class="v">${dates.length}</div></div>
+    <div class="stat"><div class="k">Extender streak</div><div class="v">${extenderStreak()}<small> days</small></div></div></div>`;
+  // consistency
+  const groups = [];
+  for (let d = S.cfg.start; d <= today; d = addDays(d, 1)) {
+    const p = planFor(d), g = groupKey(p), c = doneCount(d);
+    let G = groups[groups.length - 1];
+    if (!G || G.k !== g.k) { G = { k: g.k, label: g.label, planned: 0, done: 0 }; groups.push(G); }
+    G.planned += c.planned; G.done += c.done;
+  }
+  const gs = groups.filter(g => g.planned > 0);
+  if (gs.length) h += `<section class="card"><h3>Plan done</h3><p class="small muted" style="margin:2px 0 6px">Ticked items out of planned, AM and PM Extender counted separately.</p>${gs.map(g => { const p = Math.round(100 * g.done / g.planned); return `<div class="adh"><span>${esc(g.label)}</span><div class="meter"><i style="width:${p}%"></i></div><span class="p">${p}%</span></div>`; }).join("")}</section>`;
+  // exercise pain
+  const byEx = {};
+  Object.keys(S.logs).sort().forEach(d => { const it = S.logs[d].items || {}; Object.keys(it).forEach(k => { if (it[k].pain != null) (byEx[k] = byEx[k] || []).push({ d: d, p: it[k].pain }); }); });
+  const exKeys = Object.keys(byEx).filter(k => MOVES[k]).sort((a, b) => byEx[b][byEx[b].length - 1].d.localeCompare(byEx[a][byEx[a].length - 1].d));
+  if (exKeys.length) h += `<section class="card"><h3>Pain during exercises</h3><p class="small muted" style="margin:2px 0 6px">Most recent on the right. Over 3/10 means that move stays at its level.</p>${exKeys.map(k => `<button class="exrow" data-act="move" data-id="${k}" style="width:100%;text-align:left"><span style="font-weight:700;font-size:14.5px">${esc(MOVES[k].name)}</span><span class="dots">${byEx[k].slice(-8).map(x => `<span class="lv${painLv(x.p)}" title="${esc(fmtShort(x.d))}">${x.p}</span>`).join("")}</span></button>`).join("")}</section>`;
+  // history (table view of the chart)
+  h += `<section class="card"><h3>Every day logged</h3><div style="margin-top:4px">`;
+  dates.slice().reverse().forEach(d => {
+    const L = S.logs[d], p = planFor(d), c = doneCount(d);
+    const bits = [];
+    if (L.limp) bits.push("limp " + L.limp);
+    if (c.planned) bits.push(c.done + "/" + c.planned + " done");
+    const fl = SYMPTOMS.filter(s => L.flags && L.flags[s.k]).map(s => s.short.toLowerCase());
+    if (fl.length) bits.push(fl.join(", "));
+    h += `<button class="hrow" data-act="goto" data-date="${d}"><div class="d">${esc(fmtShort(d))}<small>${esc(p.label)}</small></div><div class="b">${esc(bits.join(" · ") || "—")}${L.notes ? `<span class="n">${esc(L.notes)}</span>` : ""}</div>${L.pain != null ? `<span class="pchip lv${painLv(L.pain)}">${L.pain}/10</span>` : "<span></span>"}</button>`;
+  });
+  return h + `</div></section>`;
+}
+function bandOf(p) {
+  if (p.phase === "w1") return { k: "w1", t: "Wk 1", c: "var(--ph1)" };
+  if (p.phase === "w2") return { k: "w2", t: "Wk 2", c: "var(--ph2)" };
+  if (p.phase === "trip" || p.phase === "bridge") return { k: "tr", t: "Trip", c: "var(--ph-trip)" };
+  if (p.phase === "m") return { k: "m", t: "Back", c: "var(--ph-m)" };
+  return { k: "k" + p.k, t: "Wk " + p.wk, c: "var(--ph3)" };
+}
+function drawPainChart() {
+  const el = $("#painChart"); if (!el) return;
+  const W = Math.max(260, Math.round(el.clientWidth)), H = 200;
+  const m = { l: 24, r: 18, t: 20, b: 44 };
+  const start = S.cfg.start, today = todayStr();
+  const pts = Object.keys(S.logs).filter(d => S.logs[d].pain != null && d >= start).sort().map(d => ({ d: d, v: S.logs[d].pain, limp: S.logs[d].limp }));
+  let end = today;
+  if (pts.length && pts[pts.length - 1].d > end) end = pts[pts.length - 1].d;
+  if (diffDays(start, end) < 13) end = addDays(start, 13);
+  const span = diffDays(start, end), pw = W - m.l - m.r, ph = H - m.t - m.b, step = pw / span;
+  const X = d => m.l + pw * diffDays(start, d) / span, Y = v => m.t + ph * (1 - v / 10);
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Morning pain by day">`;
+  // phase bands
+  const bands = []; let cur = null;
+  for (let d = start; d <= end; d = addDays(d, 1)) {
+    const b = bandOf(planFor(d));
+    if (!cur || cur.k !== b.k) { cur = Object.assign({ a: d, z: d }, b); bands.push(cur); } else cur.z = d;
+  }
+  s += `<g class="band">`;
+  bands.forEach(b => {
+    const x0 = Math.max(m.l, X(b.a) - step / 2), x1 = Math.min(W - m.r, X(b.z) + step / 2);
+    s += `<rect x="${x0.toFixed(1)}" y="${m.t}" width="${Math.max(0, x1 - x0 - 1).toFixed(1)}" height="${ph}" fill="${b.c}" opacity=".07" rx="3"/>`;
+    if (x1 - x0 > 30) s += `<text x="${(x0 + 5).toFixed(1)}" y="${m.t - 6}">${b.t}</text>`;
+  });
+  s += `</g><g class="grid">`;
+  [0, 2, 4, 6, 8, 10].forEach(v => { s += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}"/>`; });
+  s += `</g><g class="axis">`;
+  [0, 5, 10].forEach(v => { s += `<text x="${m.l - 6}" y="${(Y(v) + 4).toFixed(1)}" text-anchor="end">${v}</text>`; });
+  const xl = [start];
+  if (today > start && today < end) xl.push(today);
+  xl.push(end);
+  xl.forEach((d, i) => {
+    const anchor = i === 0 ? "start" : d === end ? "end" : "middle";
+    if (i > 0 && d !== end && (X(end) - X(d) < 64 || X(d) - X(start) < 64)) return;
+    s += `<text x="${X(d).toFixed(1)}" y="${H - m.b + 16}" text-anchor="${anchor}">${d === today ? "Today" : fmtMD(d)}</text>`;
+  });
+  s += `</g>`;
+  // line (break over gaps longer than 2 days)
+  let path = "";
+  pts.forEach((p, i) => {
+    const gap = i && diffDays(pts[i - 1].d, p.d) > 2;
+    path += (i === 0 || gap ? "M" : "L") + X(p.d).toFixed(1) + "," + Y(p.v).toFixed(1) + " ";
+  });
+  if (path) s += `<path class="line" d="${path}"/>`;
+  pts.forEach(p => { s += `<circle class="pt" cx="${X(p.d).toFixed(1)}" cy="${Y(p.v).toFixed(1)}" r="4"/>`; });
+  if (pts.length) {
+    const lp = pts[pts.length - 1], lx = X(lp.d), ly = Y(lp.v);
+    s += `<text class="endlab" x="${(lx + (lx > W - 40 ? -8 : 8)).toFixed(1)}" y="${(ly - 8).toFixed(1)}" text-anchor="${lx > W - 40 ? "end" : "start"}">${lp.v}</text>`;
+  }
+  // limp strip
+  const LC = { none: "var(--accent)", slight: "var(--hold)", obvious: "var(--stop)" };
+  pts.concat(Object.keys(S.logs).filter(d => S.logs[d].pain == null && S.logs[d].limp && d >= start).map(d => ({ d: d, limp: S.logs[d].limp })))
+    .forEach(p => { if (p.limp) s += `<rect class="limp" x="${(X(p.d) - 4.5).toFixed(1)}" y="${H - 17}" width="9" height="9" rx="2.5" fill="${LC[p.limp]}"/>`; });
+  s += `<line class="xh" id="xh" x1="0" x2="0" y1="${m.t}" y2="${m.t + ph}" visibility="hidden"/><rect id="hit" x="${m.l}" y="0" width="${pw}" height="${H}" fill="transparent"/></svg><div class="tt" id="tt" hidden></div>`;
+  el.innerHTML = s;
+  const hit = $("#hit", el), xh = $("#xh", el), tt = $("#tt", el), svg = $("svg", el);
+  const show = ev => {
+    if (!pts.length) return;
+    const r = svg.getBoundingClientRect(), px = (ev.clientX - r.left) * (W / r.width);
+    let best = pts[0];
+    pts.forEach(p => { if (Math.abs(X(p.d) - px) < Math.abs(X(best.d) - px)) best = p; });
+    const bx = X(best.d);
+    xh.setAttribute("x1", bx); xh.setAttribute("x2", bx); xh.setAttribute("visibility", "visible");
+    tt.hidden = false;
+    tt.innerHTML = "";
+    const b = document.createElement("b"); b.textContent = best.v + "/10";
+    tt.appendChild(b);
+    tt.appendChild(document.createTextNode(" · " + fmtShort(best.d) + (best.limp ? " · limp " + best.limp : "")));
+    const sx = r.width / W;
+    tt.style.left = Math.min(Math.max(bx * sx, 70), r.width - 70) + "px";
+    tt.style.top = (Y(best.v) * sx - 10) + "px";
+  };
+  const hide = () => { xh.setAttribute("visibility", "hidden"); tt.hidden = true; };
+  hit.addEventListener("pointermove", show);
+  hit.addEventListener("pointerdown", show);
+  hit.addEventListener("pointerleave", hide);
+}
+
+/* ---------------- check-in text ---------------- */
+function checkinText(date) {
+  const L = getLog(date) || {}, plan = planFor(date);
+  const out = [];
+  out.push("Rehab check-in · " + plan.eyebrow + " (" + fmtShort(date) + ") · " + plan.title + (plan.hold ? " · repeat day" : ""));
+  let l2 = "Morning pain: " + (L.pain != null ? L.pain + "/10" : "not logged");
+  const pp = prevPain(date);
+  if (pp && L.pain != null) l2 += " (" + (pp.gap === 1 ? "yesterday" : fmtShort(pp.date)) + " " + pp.pain + "/10)";
+  l2 += " · Limp: " + (L.limp || "not logged");
+  out.push(l2);
+  const done = [], not = [];
+  plan.items.forEach(x => {
+    const st = itemState(L, x.ex), name = moveName(x);
+    let s;
+    if (x.twice) s = name + " " + x.dose.replace(" · morning and evening", "") + ": AM " + (st.am ? "✓" : "✗") + ", PM " + (st.pm ? "✓" : "✗");
+    else s = name + " (" + x.dose + ")";
+    if (st.pain != null) s += " · pain " + st.pain + "/10";
+    if (st.sharp) s += " · sharp";
+    if (st.note) s += " · " + st.note;
+    const did = x.twice ? st.am || st.pm : st.done;
+    (did ? done : not).push(s);
+  });
+  const ids = new Set(plan.items.map(x => x.ex));
+  Object.keys(L.items || {}).filter(k => !ids.has(k) && MOVES[k] && hasItemData(L.items[k])).forEach(k => {
+    const st = L.items[k];
+    done.push(MOVES[k].name + " (extra)" + (st.pain != null ? " · pain " + st.pain + "/10" : "") + (st.note ? " · " + st.note : ""));
+  });
+  if (done.length) { out.push("Done:"); done.forEach(s => out.push("✓ " + s)); }
+  if (not.length) { out.push("Not done:"); not.forEach(s => out.push("✗ " + s)); }
+  (plan.checks || []).forEach(c => { const v = (L.checks || {})[c.id]; if (v != null) out.push("Checkpoint: " + c.q + " " + (v ? "Yes" : "Not yet")); });
+  if (showTripCard(date, plan)) {
+    const t = S.tests.trip, v = tripVerdict(), m = x => x === true ? "✓" : x === false ? "✗" : "–";
+    out.push("Trip check: walk " + m(t.walk) + ", next morning " + m(t.morning) + ", bridges/Diver easy " + m(t.easy) + (v ? " → " + v.text : ""));
+  }
+  if (plan.items.some(x => x.test === "final")) {
+    const f = S.tests.final, p = curlPct(), m = x => x === true ? "pass" : x === false ? "fail" : "–";
+    out.push("100% test: sprints " + m(f.sprint) + ", kick " + m(f.kick) + ", range " + m(f.range) + ", curl " + (p == null ? "–" : f.r + " R / " + f.l + " L at " + (f.w || "?") + " lb (" + Math.round(p * 100) + "%)"));
+  }
+  const fl = SYMPTOMS.filter(s => L.flags && L.flags[s.k]).map(s => s.short);
+  out.push("Symptoms: " + (fl.length ? fl.join(", ") : "none flagged"));
+  if (L.notes) out.push("Notes: " + L.notes);
+  return out.join("\n");
+}
+
+/* ---------------- sheets & helpers ---------------- */
+const Modal = {
+  confirmFn: null, onClose: null,
+  open(html) {
+    const root = $("#modalRoot"), had = !!root.firstChild;
+    const sc = had ? $(".sheet", root).scrollTop : 0;
+    root.innerHTML = `<div class="modal" data-act="backdrop"><div class="sheet" role="dialog" aria-modal="true">${html}</div></div>`;
+    if (had) { const sh = $(".sheet", root); sh.style.animation = "none"; sh.scrollTop = sc; }
+    document.body.style.overflow = "hidden";
+  },
+  close() {
+    $("#modalRoot").innerHTML = ""; this.confirmFn = null; document.body.style.overflow = "";
+    const cb = this.onClose; this.onClose = null; if (cb) cb();
+    render();
+  },
+  isOpen() { return !!$("#modalRoot").firstChild; }
+};
+function toast(msg) {
+  let t = $("#toast");
+  if (!t) { t = document.createElement("div"); t.id = "toast"; t.className = "toast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
+  t.textContent = msg; t.hidden = false;
+  clearTimeout(toast.tm); toast.tm = setTimeout(() => { t.hidden = true; }, 2200);
+}
+function confirmSheet(title, body, yes, fn, danger) {
+  Modal.open(`<div class="grab"></div><div class="shead"><h2 class="grow">${esc(title)}</h2></div><div class="sbody"><p>${esc(body)}</p>
+    <div class="btns"><button class="btn ${danger ? "danger" : "primary"}" data-act="confirmyes">${esc(yes)}</button><button class="btn" data-act="close">Cancel</button></div></div>`);
+  Modal.confirmFn = fn;
+}
+function textSheet(title, text, note) {
+  Modal.open(`<div class="grab"></div><div class="shead"><h2 class="grow">${esc(title)}</h2><button class="x" data-act="close" aria-label="Close">${IC.x}</button></div><div class="sbody">
+    ${note ? `<p class="small muted">${esc(note)}</p>` : ""}<div class="textout" id="textout" tabindex="0">${esc(text)}</div>
+    <button class="btn primary block" data-act="copytext">Copy</button></div>`);
+}
+function selectText(el) { try { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); } catch (e) {} }
+function copyText(text, title) {
+  const fallback = () => { textSheet(title || "Copy this", text, "Select all and copy."); selectText($("#textout")); };
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(() => toast("Copied"), fallback);
+    else fallback();
+  } catch (e) { fallback(); }
+}
+function itemSheet(date, id) {
+  const L = getLog(date), st = itemState(L, id);
+  const x = planFor(date).items.find(i => i.ex === id) || { ex: id };
+  const name = moveName(x);
+  const scale = Array.from({ length: 11 }, (_, n) => `<button class="${st.pain === n ? "on lv" + painLv(n) : ""}" data-act="ipain" data-id="${id}" data-v="${n}" aria-pressed="${st.pain === n}">${n}</button>`).join("");
+  Modal.open(`<div class="grab"></div><div class="shead"><div class="grow"><div class="eyebrow">${esc(fmtShort(date))}</div><h2>${esc(name)}</h2></div><button class="x" data-act="close" aria-label="Close">${IC.x}</button></div>
+    <div class="sbody">
+      <div><div class="q">Pain during it</div><div class="qhint">Rule 1: up to 3/10 is fine. Sharp pain or a sudden pull means stop that move for the day.</div></div>
+      <div class="scale">${scale}</div>
+      <div class="chips" style="margin-top:0"><button class="chip ${st.sharp ? "on" : ""}" data-act="isharp" data-id="${id}" aria-pressed="${!!st.sharp}">Sharp pain or a sudden pull</button></div>
+      <div class="field"><label for="itemNote">Note</label><textarea id="itemNote" data-input="inote" data-id="${id}" rows="3" placeholder="Load, reps, range, how it felt">${esc(st.note || "")}</textarea></div>
+      <div class="btns">${st.pain != null || st.sharp ? `<button class="btn" data-act="iclear" data-id="${id}">Clear rating</button>` : ""}${x.extra || (L && L.items && L.items[id] && !planFor(date).items.some(i => i.ex === id)) ? `<button class="btn danger" data-act="iremove" data-id="${id}">Remove</button>` : ""}<button class="btn primary" data-act="close">Done</button></div>
+    </div>`);
+}
+function addSheet() {
+  let h = `<div class="grab"></div><div class="shead"><div class="grow"><div class="eyebrow">${esc(fmtShort(View.date))}</div><h2>Add something else</h2></div><button class="x" data-act="close" aria-label="Close">${IC.x}</button></div><div class="sbody pick">`;
+  const inPlan = new Set(planFor(View.date).items.map(x => x.ex)), L = getLog(View.date);
+  MOVE_CATS.forEach(c => {
+    const keys = Object.keys(MOVES).filter(k => MOVES[k].cat === c.k && !inPlan.has(k));
+    if (!keys.length) return;
+    h += `<div class="eyebrow cat">${esc(c.name)}</div>`;
+    keys.forEach(k => { const on = hasItemData(itemState(L, k)); h += `<button class="lib" data-act="pickextra" data-id="${k}"><span class="nm">${esc(MOVES[k].name)}</span><span class="tag">${on ? "Added" : "Add"}</span></button>`; });
+  });
+  Modal.open(h + `</div>`);
+}
+function importSheet() {
+  Modal.open(`<div class="grab"></div><div class="shead"><h2 class="grow">Restore a backup</h2><button class="x" data-act="close" aria-label="Close">${IC.x}</button></div><div class="sbody">
+    <div class="field"><label for="impFile">Backup file</label><input type="file" id="impFile" accept="application/json,.json" data-change="impfile"></div>
+    <div class="field"><label for="impText">Or paste the backup text</label><textarea id="impText" rows="5" placeholder='{"v":1, …}'></textarea></div>
+    <button class="btn primary block" data-act="imptext">Restore</button>
+    <p class="small muted">Restoring replaces everything logged on this device.</p></div>`);
+}
+function doImport(raw) {
+  let obj;
+  try { obj = JSON.parse(raw); } catch (e) { toast("That isn't a Rehab Log backup"); return; }
+  if (!obj || typeof obj !== "object" || !obj.logs || !obj.cfg) { toast("That isn't a Rehab Log backup"); return; }
+  confirmSheet("Replace everything?", "Restoring replaces all days logged on this device with the backup (" + Object.keys(obj.logs).length + " days).", "Restore backup", () => {
+    S = migrate(obj); save(); applyTheme(); toast("Backup restored");
+  });
+}
+function exportData() {
+  const json = JSON.stringify(S);
+  S.ui.lastBackup = todayStr(); save();
+  if (BUILD === "pages") {
+    try {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([json], { type: "application/json" }));
+      a.download = "rehablog-backup-" + todayStr() + ".json";
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+      toast("Backup saved to Downloads"); render(); return;
+    } catch (e) {}
+  }
+  textSheet("Backup", json, "Copy this text and keep it somewhere safe. Restore it with “Restore a backup”.");
+}
+
+/* ---------------- events ---------------- */
+function setGate(k, v) {
+  for (let i = 0; i < k; i++) if (S.weekResults[i] == null) S.weekResults[i] = "repeat";
+  S.weekResults[k] = v;
+}
+const A = {
+  tab(t) {
+    View.tab = t.dataset.tab; if (Modal.isOpen()) Modal.close(); else render();
+    const an = t.dataset.anchor && document.getElementById(t.dataset.anchor);
+    if (an) an.scrollIntoView({ block: "start" }); else window.scrollTo(0, 0);
+  },
+  day(t) { const d = addDays(View.date, +t.dataset.d); if (d >= S.cfg.injury) { View.date = d; render(); } },
+  goto(t) { View.date = t.dataset.date; const was = View.tab; View.tab = "today"; render(); if (was !== "today") window.scrollTo(0, 0); },
+  pain(t) { const L = ensureLog(View.date); L.pain = +t.dataset.v; save(); render(); },
+  clearpain() { const L = ensureLog(View.date); L.pain = null; save(); render(); },
+  limp(t) { const L = ensureLog(View.date); L.limp = L.limp === t.dataset.v ? "" : t.dataset.v; save(); render(); },
+  flag(t) { const L = ensureLog(View.date), k = t.dataset.v; L.flags[k] = !L.flags[k]; View.flagsOpen = true; save(); render(); },
+  tick(t) {
+    const L = ensureLog(View.date), id = t.dataset.id, slot = t.dataset.slot;
+    const st = L.items[id] = L.items[id] || {};
+    if (slot) st[slot] = !st[slot]; else st.done = !st.done;
+    if (id === "tripcheck" && st.done) S.tests.trip.walkDate = View.date;
+    save(); render();
+  },
+  itemsheet(t) { itemSheet(View.date, t.dataset.id); },
+  ipain(t) {
+    const L = ensureLog(View.date), id = t.dataset.id, st = L.items[id] = L.items[id] || {};
+    st.pain = +t.dataset.v;
+    const x = planFor(View.date).items.find(i => i.ex === id);
+    if (!(x && x.twice)) st.done = true;
+    save(); itemSheet(View.date, id); render();
+  },
+  isharp(t) { const L = ensureLog(View.date), id = t.dataset.id, st = L.items[id] = L.items[id] || {}; st.sharp = !st.sharp; save(); itemSheet(View.date, id); render(); },
+  iclear(t) { const L = ensureLog(View.date), st = L.items[t.dataset.id] || {}; delete st.pain; delete st.sharp; save(); itemSheet(View.date, t.dataset.id); render(); },
+  iremove(t) { const L = ensureLog(View.date); delete L.items[t.dataset.id]; save(); Modal.close(); toast("Removed"); },
+  move(t) {
+    const k = t.dataset.id, inToday = View.tab === "today" && !Modal.isOpen();
+    moveSheet(k, { dose: inToday ? t.dataset.dose : "", date: View.date, back: t.dataset.back || "" });
+  },
+  addextra() { addSheet(); },
+  pickextra(t) {
+    const L = ensureLog(View.date), id = t.dataset.id;
+    if (hasItemData(L.items[id])) delete L.items[id]; else L.items[id] = { done: true };
+    save(); addSheet(); render();
+  },
+  hold() {
+    if (!canHold(View.date) || isHold(View.date)) return;
+    S.holds.push(View.date); S.holds.sort(); save(); render();
+    toast("Repeating Day " + planFor(View.date).day + "'s level");
+  },
+  unhold() { S.holds = S.holds.filter(h => h !== View.date); save(); render(); toast("Back on schedule"); },
+  check(t) { const L = ensureLog(View.date), v = t.dataset.v === "1"; L.checks[t.dataset.id] = L.checks[t.dataset.id] === v ? undefined : v; save(); render(); },
+  trip(t) {
+    const tr = S.tests.trip, k = t.dataset.id, v = t.dataset.v === "1";
+    tr[k] = tr[k] === v ? null : v;
+    if (k === "walk" && tr.walk != null && !tr.walkDate) tr.walkDate = View.tab === "today" ? View.date : todayStr();
+    save(); render();
+  },
+  final(t) { const f = S.tests.final, k = t.dataset.id, v = t.dataset.v === "1"; f[k] = f[k] === v ? null : v; save(); render(); },
+  recordfinal(t) {
+    const date = t.dataset.date || todayStr(), k = recordableK(date), v = finalVerdict();
+    if (k < 0 || !v) return;
+    S.tests.finalLog.push(Object.assign({ date: date, pass: v.pass }, S.tests.final));
+    setGate(k, v.pass);
+    if (!v.pass) S.tests.final = { sprint: null, kick: null, range: null, w: "", r: "", l: "" };
+    save(); render(); toast(v.pass ? "Passed. Maintenance from here." : "Recorded. Week 5 again next week.");
+  },
+  gate(t) {
+    const k = +t.dataset.k, v = t.dataset.v === "1" ? true : t.dataset.v === "0" ? false : "repeat";
+    setGate(k, v); save(); render();
+  },
+  ungate(t) { S.weekResults[+t.dataset.k] = null; save(); render(); },
+  share() {
+    const text = checkinText(View.date);
+    if (BUILD === "pages" && navigator.share) { navigator.share({ text: text }).catch(() => {}); return; }
+    copyText(text, "Check-in");
+  },
+  copy() { copyText(checkinText(View.date), "Check-in"); },
+  copytext() { const el = $("#textout"); if (!el) return; selectText(el); copyText(el.textContent); },
+  mfilter(t) { View.filter = t.dataset.v; render(); },
+  theme(t) { S.cfg.theme = t.dataset.v; save(); applyTheme(); render(); },
+  week3auto() { S.cfg.week3 = ""; save(); render(); },
+  export() { exportData(); },
+  import() { importSheet(); },
+  imptext() { const v = ($("#impText") || {}).value || ""; if (v.trim()) doImport(v.trim()); else toast("Choose a file or paste the backup text"); },
+  reset() { confirmSheet("Erase everything?", "This deletes every day you've logged on this device, plus trip dates and test results. Back up first if you might want it.", "Erase everything", () => { S = defaultState(); save(); applyTheme(); View.date = todayStr(); toast("Erased"); }, true); },
+  confirmyes() { const fn = Modal.confirmFn; Modal.confirmFn = null; if (fn) fn(); Modal.close(); },
+  close() { Modal.close(); },
+  backdrop(t, e) { if (e.target === t) Modal.close(); },
+  dismisspreview() { S.ui.previewDismissed = true; save(); render(); },
+  setup() {
+    const v = ($("#setupInjury") || {}).value || "";
+    if (!v) { toast("Pick the date it happened"); return; }
+    if (v > todayStr()) { toast("That date is in the future"); return; }
+    S.cfg.injury = v; S.cfg.start = addDays(v, 1);
+    View.date = todayStr(); View.tab = "today"; save(); render(); window.scrollTo(0, 0);
+  }
+};
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-act]");
+  if (!t || t.disabled) return;
+  const fn = A[t.dataset.act];
+  if (fn) fn(t, e);
+});
+let noteTimer = null;
+document.addEventListener("input", e => {
+  const t = e.target.closest("[data-input]"); if (!t) return;
+  if (t.dataset.input === "notes") { const L = ensureLog(View.date); L.notes = t.value; }
+  if (t.dataset.input === "inote") { const L = ensureLog(View.date), st = L.items[t.dataset.id] = L.items[t.dataset.id] || {}; st.note = t.value; }
+  clearTimeout(noteTimer); noteTimer = setTimeout(save, 300);
+});
+document.addEventListener("change", e => {
+  const t = e.target.closest("[data-change]"); if (!t) return;
+  const kind = t.dataset.change;
+  if (kind === "cfg") {
+    const k = t.dataset.k; let v = t.value || "";
+    if (k === "week3" && v && dow(v) !== 0) { v = addDays(v, (7 - dow(v)) % 7); toast("Moved to Monday " + fmtMD(v)); }
+    if ((k === "injury" || k === "start") && !v) { render(); return; }
+    S.cfg[k] = v;
+    if (S.cfg.tripStart && S.cfg.tripEnd && S.cfg.tripEnd < S.cfg.tripStart) { const a = S.cfg.tripStart; S.cfg.tripStart = S.cfg.tripEnd; S.cfg.tripEnd = a; toast("Swapped: leave date comes first"); }
+    save(); render();
+  }
+  if (kind === "final") { S.tests.final[t.dataset.k] = t.value; save(); render(); }
+  if (kind === "impfile") {
+    const f = t.files && t.files[0]; if (!f) return;
+    const r = new FileReader(); r.onload = () => doImport(String(r.result)); r.readAsText(f);
+  }
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape" && Modal.isOpen()) Modal.close(); });
+let rsz = null;
+window.addEventListener("resize", () => { clearTimeout(rsz); rsz = setTimeout(() => { if (View.tab === "progress") drawPainChart(); }, 150); });
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && !Modal.isOpen() && !(document.activeElement && /TEXTAREA|INPUT/.test(document.activeElement.tagName))) {
+    const t = todayStr(); if (View.lastSeen && View.lastSeen !== t && View.date === View.lastSeen) View.date = t;
+    View.lastSeen = t; render();
+  }
+});
+
+/* ---------------- boot ---------------- */
+$("#navIn").innerHTML = [["today", "Today"], ["plan", "Plan"], ["moves", "Moves"], ["progress", "Progress"]]
+  .map(t => `<button data-act="tab" data-tab="${t[0]}">${IC[t[0]]}<span>${t[1]}</span></button>`).join("");
+View.lastSeen = todayStr();
+applyTheme();
+render();
+if (BUILD === "pages" && "serviceWorker" in navigator && location.protocol === "https:") {
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+}
+
+</script>
+</body>
+</html>
